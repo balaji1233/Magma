@@ -338,12 +338,12 @@
   <section class="section" id="real">
     <div class="container is-max-fullhd" style="margin-top: -5em;">
       <hr width="100%" size="2">
-      <h2 class="title is-3 has-text-centered">Real-Robot Rollouts</h2>
+      <h2 class="title is-3 has-text-centered">Embodied Intelligence</h2>
       <div class="columns is-centered">
         <div class="column is-four-fifths">
           <div class="content has-text-justified">
             <p style="text-align: left;font-size: 18px">
-              WidowX robot videos show real "zero-shot" rollouts with <strong>Magma</strong> model. (Videos are sped up by 2.5x.)<br>
+              WidowX videos show real robot rollouts with <strong>Magma</strong> model. (Videos are sped up by 2.5x.)<br>
             </p>
           </div>
         </div>
@@ -432,7 +432,7 @@
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-full-width">
-          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px; margin-top: -40px;">Simulation Benchmark: SimplerEnv</h2>
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px; margin-top: -40px;">Simulation Benchmark</h2>
           <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
           <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths ">
@@ -447,7 +447,7 @@
                 </div>
                 <div class="columns is-centered ">
                   <div class="column">
-                      <p style="text-align: left;font-size: 18px; margin-top: 10px;"><strong>Magma</strong> consistently outperforms OpenVLA across various tasks and evaluation metrics in the SimplerEnv Google robot tasks. The improvements are evident in both the full-scale 7B models (<strong>TraceVLA</strong> vs OpenVLA) and their 4B versions (<strong>TraceVLA-Phi3</strong> vs OpenVLA-Phi3). </p>
+                      <p style="text-align: left;font-size: 18px; margin-top: 10px;"><strong>SimplerEnv evaluation on Google Robots and Bridge. </strong> <strong>Magma</strong> shows strong cross-domain robustness and demonstrates impressive results in cross-embodiment manipulation simulation tasks.</p>
                 </div>
               </div>
               </td>
@@ -515,39 +515,6 @@
                       <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Zero-shot Video QA benchmarks.</strong> <strong>Magma</strong> performs competitively and even outperforms some state-of-the-art approaches such as Video-Llama2 and ShareGPT4Video on most benchmarks, despite using much fewer video instruction tuning data.</p>
                 </div>
               </div>
-              </td>
-            </tr>
-          </div>
-          </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section body">
-    <div class="container">
-      <div class="columns is-centered">
-        <div class="column is-full-width">
-          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Training Memory Cost and Inference Speed</h2>
-          <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
-          <div class="columns is-centered has-text-centered">
-          <div class="column is-four-fifths ">
-          <div class="content has-text-justified">
-            
-            <tr>
-              <td>
-                <div class="row">
-                  <div class="col">
-                    <img src="./static/images/exp-cost.png" alt="Image description" width="100%">
-                  </div>
-                </div>
-              <br>
-              <div class="columns is-centered ">
-                <div class="column">
-                    <p style="text-align: left;font-size: 18px"><strong>TraceVLA</strong>'s memory overhead is manageable at less than 10GB when using 8 H100 GPUs, with the difference decreasing at smaller batch sizes. In terms of speed, the model introduces three main components during inference: image/text tokens (0.002s), CoTracker tracking (0.03s), and dense point tracking (0.004s) per timestep. These additional computational costs remain relatively small and well-optimized due to GPU attention optimization.</p>
-              </div>
-            </div>
               </td>
             </tr>
           </div>
