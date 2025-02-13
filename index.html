@@ -173,7 +173,7 @@
     </div>
   </section>
 
-  <section class="hero is-light is-small">
+  <section class="hero is-small">
     <div class="hero-body">
       <div class="container is-two-thirds">
         <div class="columns is-centered has-text-centered">
@@ -201,7 +201,54 @@
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-full-width">
-          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Visual Trace Generation & Close-loop Control with TraceVLA</h2>
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Set-of-Mark & Trace-of-Mark Generation</h2>
+          <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
+          <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths ">
+          <div class="content has-text-justified">
+
+            <tr>
+              <td>
+                <div class="row" style="text-align: center;">
+                  <div class="col">
+                    <img src="./static/images/som_fig.png" alt="Image description" width="60%"; >
+                  </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Set-of-Mark for Action Grounding. </strong>Set-of-Mark supervisions for action grounding on UI screenshot (left), robot manipulation (middle) and human video (right).</p>
+                </div>
+              </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="row" style="text-align: center;">
+                  <div class="col style="text-align: center;">
+                    <img src="./static/images/tom_fig.png" alt="Image description" width="100%"; >
+                  </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Trace-of-Mark for Action Planning. </strong>Trace-of-Mark supervisions for robot manipulation (left) and human action (right). </p>
+                </div>
+              </div>
+              </td>
+            </tr>
+          </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Magma Pretraining</h2>
           <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
           <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths ">
@@ -210,14 +257,37 @@
             <tr>
               <td>
                 <div class="row">
-                  <div class="col">
-                    <img src="./static/images/control.png" alt="Image description" width="100%">
-                  </div>
+                  <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                    <img src="./static/images/magma_data_sunburst.png" style="max-width: 250px;">
+                    <img src="./static/images/magma_data_sample.png" style="max-width: 650px;">
+                </div>
                 </div>
                 <div class="columns is-centered">
                   <div class="column">
-                      <p style="text-align: left;font-size: 18px">Given a sequence of historical image observations, we first use Co-tracker to extract dense point trajectories and keep active point trajectories with significant movement.
-                        We then overlay active point trajectories on the robot’s initial observation frame as visual trace prompting and feed both the image overlaid with visual traces and the original image into VLA as model input.</p>
+                    <p style="text-align: left;font-size: 18px; margin-top: 20px;">
+                      <strong>Overview of Pretraining Data Sources</strong>: 
+                      <span style="color: rgb(255, 210, 63);">instructional videos</span>, 
+                      <span style="color: rgb(26, 163, 26);">robotics manipulation</span>, 
+                      <span style="color: rgb(213, 113, 130);">UI navigation</span>, and 
+                      <span style="color: rgb(55, 160, 246);">multimodal understanding</span>
+                  </p>
+                </div>
+              </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="row">
+                  <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                    <img src="./static/images/magma_pretrain.png" style="width: 100%;">
+                </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Magma pretraining pipeline. </strong>For all training data, texts are tokenized into tokens, while images and videos from different domains
+                        are encoded by a shared vision encoder. The resulted discrete and continuous tokens are then fed into a LLM to generate the outputs in
+                        verbal, spatial and action types. </p>
                 </div>
               </div>
               </td>
@@ -229,163 +299,32 @@
       </div>
     </div>
   </section>
+
 
 
   <section class="section body">
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-full-width">
-          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Real-Robot Rollouts</h2>
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Agentic Intelligence</h2>
           <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
           <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths ">
-            <div class="content has-text-justified">
-              <p>
-                Below are videos of TraceVLA and OpenVLA on physical WidowX-250 robot manipulation tasks with different manipulation skills and objects. (Videos are sped up by 2.5x.)
-              </p>
-            </div>
-            <div class="content has-text-justified">
-              <p><strong>TraceVLA</strong> masters soft object manipulation, pick-and-place operations, and object movement, demonstrating reliable performance in both in-distribution and out-of-distribution generalization tasks.</p>
-            </div>
+          <div class="content has-text-justified">
 
-            <div class="columns is-vcentered is-multiline interpolation-panel">
-              <div class="column is-full" style="text-align: center; margin-bottom: 0; padding-bottom: 0;">  
-                <h5 style="font-size: 24px; margin-bottom: 1px;">Pick Place Hotdog Sausage</h5>
-              </div>
-              <div class="column is-half" style="text-align: center; padding-top: 0;"> 
-                  <div style="width: 80%; display: inline-block;">
-                    <div style="text-align: center; margin-top: 1px;">
-                      <strong>Magma</strong>
-                    </div>
-                      <video autoplay controls muted loop playsinline width="100%">
-                          <source src="static/videos/fold_tracevla.mp4" type="video/mp4">
-                      </video>
-                  </div>
-              </div>
-              <div class="column is-half" style="text-align: center; padding-top: 0;"> 
-                  <div style="width: 80%; display: inline-block;">
-                    <div style="text-align: center; margin-top: 1px;">
-                      OpenVLA
-                    </div>
-                      <video autoplay controls muted loop playsinline width="100%">
-                          <source src="static/videos/fold_openvla.mp4" type="video/mp4">
-                      </video>
-                  </div>
-              </div>
-          </div>
-
-            <div class="columns is-vcentered interpolation-panel">
-              <div class="column has-text-centered">
-                <h5>Fold Cloth</h5>
-                <p style="font-size: 15px; color: #2a2727; margin: 2px 10%; line-height: 1.2;">
-                  (In-Distribution)
-                </p>
-                <div style="width: 49%; display: inline-block;">
-                  <video autoplay controls muted loop playsinline width="100%">
-                      <source src="static/videos/fold_tracevla.mp4" type="video/mp4">
-                  </video>
-                  <div style="text-align: center; margin-top: 5px;">
-                      TraceVLA
-                  </div>
-              </div>
-              <div style="width: 49%; display: inline-block;">
-                <video autoplay controls muted loop playsinline width="100%">
-                    <source src="static/videos/fold_openvla.mp4" type="video/mp4">
-                </video>
-                <div style="text-align: center; margin-top: 5px;">
-                    OpenVLA
+            <tr>
+              <td>
+                <div class="row">
+                  <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                    <img src="./static/images/magma_agentic.png" style="width: 100%;">
+                </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px"><strong>Zero-shot evaluation on agentic intelligence.</strong> We report the results for pretrained Magma without any domain-specific finetuning.
+                        <strong>Magma</strong> is the only model that can conduct the full task spectrum.</p>
                 </div>
               </div>
-              </div>
-              
-              <div class="column is-half  has-text-centered">
-                <h5>Pickplace Corn Pot</h5>
-                <p style="font-size: 15px; color: #2a2727; margin: 2px 10%; line-height: 1.2;">
-                  (Out-of-Distribution: Unseen Task)
-                </p>
-                <div style="width: 49%; display: inline-block;">
-                  <video autoplay controls muted loop playsinline width="100%">
-                    <source src="static/videos/corn_tracevla.mp4" type="video/mp4">
-                  </video>
-                  <div style="text-align: center; margin-top: 5px;">
-                    TraceVLA
-                  </div>
-                </div>
-                <div style="width: 49%; display: inline-block;">
-                  <video autoplay controls muted loop playsinline width="100%">
-                    <source src="static/videos/openvla_corn.mp4" type="video/mp4">
-                  </video>
-                  <div style="text-align: center; margin-top: 5px;">
-                    OpenVLA
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="columns is-vcentered interpolation-panel">
-              <div class="column  has-text-centered">
-                <h5>Pick Banana to the Right of Plate</h5>
-                <p style="font-size: 15px; color: #2a2727; margin: 2px 10%; line-height: 1.2;">
-                  (Out-of-Distribution: Unseen Task)
-                </p>
-                <div style="width: 49%; display: inline-block;">
-                  <video autoplay controls muted loop playsinline width="100%">
-                      <source src="static/videos/banana_tracevla.mp4" type="video/mp4">
-                  </video>
-                  <div style="text-align: center; margin-top: 5px;">
-                      TraceVLA
-                  </div>
-              </div>
-              <div style="width: 49%; display: inline-block;">
-                <video autoplay controls muted loop playsinline width="100%">
-                    <source src="static/videos/banana_openvla.mp4" type="video/mp4">
-                </video>
-                <div style="text-align: center; margin-top: 5px;">
-                    OpenVLA
-                </div>
-              </div>
-              </div>
-              <div class="column  has-text-centered">
-                <h5>Lift AAA Battery</h5>
-                <p style="font-size: 15px; color: #2a2727; margin: 2px 10%; line-height: 1.2;">
-                  (Out-of-Distribution: Unseen Object)
-                </p>
-                <div style="width: 49%; display: inline-block;">
-                  <video autoplay controls muted loop playsinline width="100%">
-                    <source src="static/videos/battery_tracevla.mp4" type="video/mp4">
-                  </video>
-                  <div style="text-align: center; margin-top: 5px;">
-                    TraceVLA
-                  </div>
-                </div>
-                <div style="width: 49%; display: inline-block;">
-                  <video autoplay controls muted loop playsinline width="100%">
-                    <source src="static/videos/battery_openvla.mp4" type="video/mp4">
-                  </video>
-                  <div style="text-align: center; margin-top: 5px;">
-                    OpenVLA
-                  </div>
-                </div>
-              </div>
-            </div>
-  
-
-              <div class="columns is-centered ">
-                <div class="column">
-                    <p style="text-align: left;font-size: 18px">We design 8 real-world robot tasks with different manipulation skills and objects and include unseen tasks involving novel objects, goals, and language instructions for evaluating generalization in real robot settings.</p>
-              </div>
-            </div>
-              <div class="row">
-                <div class="col">
-                  <img src="./static/images/magma_real.png" alt="Image description" width="80%">
-                </div>
-              </div>
-              <div class="columns is-centered ">
-                <div class="column">
-                    <p style="text-align: left;font-size: 18px"><strong>TraceVLA</strong> consistently outperforms OpenVLA across diverse tasks including
-                      soft object manipulation, pick-and-place operations, and object movement and demonstrates superior generalization</p>
-              </div>
-            </div>
               </td>
             </tr>
           </div>
@@ -395,6 +334,98 @@
       </div>
     </div>
   </section>
+
+  <section class="section" id="real">
+    <div class="container is-max-fullhd" style="margin-top: -5em;">
+      <hr width="100%" size="2">
+      <h2 class="title is-3 has-text-centered">Real-Robot Rollouts</h2>
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <div class="content has-text-justified">
+            <p style="text-align: left;font-size: 18px">
+              WidowX robot videos show real "zero-shot" rollouts with <strong>Magma</strong> model. (Videos are sped up by 2.5x.)<br>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="title is-4 has-text-centered" style="margin-top: -1rem; margin-bottom: 2rem;">Pick Place Hotdog Sausage</h3>
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <div class="columns is-centered">
+            <div class="column content has-text-centered">
+              <video autoplay muted loop controls playsinline height="80%" style="max-width: 450px; width: 100%; border-radius: 10px; overflow: hidden;">
+                <source src="./static/videos/magma_hotdog.mp4" type="video/mp4">
+              </video>
+              
+              <h4 class="title is-5 has-text-centered">Magma</h4>
+            </div>
+            <div class="column content has-text-centered">
+              <video autoplay muted loop controls playsinline height="80%" style="max-width: 450px; width: 100%; border-radius: 10px; overflow: hidden;">
+                <source src="./static/videos/openvla_hotdog.mp4" type="video/mp4">
+              </video>
+              <h4 class="title is-5 has-text-centered">OpenVLA</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="title is-4 has-text-centered" style="margin-top: -2rem; margin-bottom: 2rem;">Put Mushroom Place Pot</h3>
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <div class="columns is-centered">
+            <div class="column content has-text-centered">
+              <video autoplay muted loop controls playsinline height="80%" style="max-width: 450px; width: 100%; border-radius: 10px; overflow: hidden;">
+                <source src="./static/videos/magma_mushroom.mp4" type="video/mp4">
+              </video>
+              <h4 class="title is-5 has-text-centered">Magma</h4>
+            </div>
+            <div class="column content has-text-centered">
+              <video autoplay muted loop controls playsinline height="80%" style="max-width: 450px; width: 100%; border-radius: 10px; overflow: hidden;">
+                <source src="./static/videos/openvla_mushroom.mp4" type="video/mp4">
+              </video>
+              <h4 class="title is-5 has-text-centered">OpenVLA</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="title is-4 has-text-centered" style="margin-top: -2rem; margin-bottom: 2rem;">Push Cloth Left to Right (Out-of-Distribution)</h3>
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <div class="columns is-centered">
+            <div class="column content has-text-centered">
+              <video autoplay muted loop controls playsinline height="80%" style="max-width: 450px; width: 100%; border-radius: 10px; overflow: hidden;">
+                <source src="./static/videos/magma_left.mp4" type="video/mp4">
+              </video>
+              <h4 class="title is-5 has-text-centered">Magma</h4>
+            </div>
+            <div class="column content has-text-centered">
+              <video autoplay muted loop controls playsinline height="80%" style="max-width: 450px; width: 100%; border-radius: 10px; overflow: hidden;">
+                <source src="./static/videos/openvla_left.mp4" type="video/mp4">
+              </video>
+              <h4 class="title is-5 has-text-centered">OpenVLA</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <p style="text-align: left;font-size: 18px"><strong>Magma</strong> consistently outperforms OpenVLA across soft object manipulation and pick-and-place operations, demonstrating reliable performance in both in-distribution and out-of-distribution generalization tasks.</p>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="./static/images/magma_real.png" alt="Image description" style="width: 80%;">
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      document.querySelectorAll('video').forEach(video => {
+          video.playbackRate = 2.5;
+      });
+  </script>
+</section>
 
  
   <section class="section body">
@@ -416,7 +447,7 @@
                 </div>
                 <div class="columns is-centered ">
                   <div class="column">
-                      <p style="text-align: left;font-size: 18px"><strong>TraceVLA</strong> consistently outperforms OpenVLA across various tasks and evaluation metrics in the SimplerEnv Google robot tasks. The improvements are evident in both the full-scale 7B models (<strong>TraceVLA</strong> vs OpenVLA) and their 4B versions (<strong>TraceVLA-Phi3</strong> vs OpenVLA-Phi3). </p>
+                      <p style="text-align: left;font-size: 18px"><strong>Magma</strong> consistently outperforms OpenVLA across various tasks and evaluation metrics in the SimplerEnv Google robot tasks. The improvements are evident in both the full-scale 7B models (<strong>TraceVLA</strong> vs OpenVLA) and their 4B versions (<strong>TraceVLA-Phi3</strong> vs OpenVLA-Phi3). </p>
                 </div>
               </div>
               </td>
@@ -492,15 +523,6 @@
       </div>
     </div>
   </footer>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const videos = document.getElementsByTagName('video');
-        for (let video of videos) {
-            video.playbackRate = 2.0;
-        }
-    });
-</script>
 
 </body>
 </html>
