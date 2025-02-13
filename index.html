@@ -306,7 +306,7 @@
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-full-width">
-          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Agentic Intelligence</h2>
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px; margin-top: -40px;">Agentic Intelligence</h2>
           <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
           <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths ">
@@ -414,7 +414,7 @@
         <div class="column is-four-fifths">
           <p style="text-align: left;font-size: 18px"><strong>Magma</strong> consistently outperforms OpenVLA across soft object manipulation and pick-and-place operations, demonstrating reliable performance in both in-distribution and out-of-distribution generalization tasks.</p>
           <div style="text-align: center; margin: 2rem 0;">
-            <img src="./static/images/magma_real.png" alt="Image description" style="width: 80%;">
+            <img src="./static/images/magma_real.png" alt="Image description" style="width: 60%;">
           </div>
         </div>
       </div>
@@ -432,7 +432,7 @@
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-full-width">
-          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Simulation Benchmark: SimplerEnv</h2>
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px; margin-top: -40px;">Simulation Benchmark: SimplerEnv</h2>
           <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
           <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths ">
@@ -447,7 +447,72 @@
                 </div>
                 <div class="columns is-centered ">
                   <div class="column">
-                      <p style="text-align: left;font-size: 18px"><strong>Magma</strong> consistently outperforms OpenVLA across various tasks and evaluation metrics in the SimplerEnv Google robot tasks. The improvements are evident in both the full-scale 7B models (<strong>TraceVLA</strong> vs OpenVLA) and their 4B versions (<strong>TraceVLA-Phi3</strong> vs OpenVLA-Phi3). </p>
+                      <p style="text-align: left;font-size: 18px; margin-top: 10px;"><strong>Magma</strong> consistently outperforms OpenVLA across various tasks and evaluation metrics in the SimplerEnv Google robot tasks. The improvements are evident in both the full-scale 7B models (<strong>TraceVLA</strong> vs OpenVLA) and their 4B versions (<strong>TraceVLA-Phi3</strong> vs OpenVLA-Phi3). </p>
+                </div>
+              </div>
+              </td>
+            </tr>
+          </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;margin-top: -40px;">Spatial Reasoning</h2>
+          <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
+          <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths ">
+          <div class="content has-text-justified">
+
+            <tr>
+              <td>
+                <div class="row">
+                  <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                    <img src="./static/images/magma_spatial_table.png" style="max-width: 600px;">
+                    <img src="./static/images/magma_spatial_visualizations.png" style="max-width: 600px;">
+                </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Spatial reasoning evaluations.</strong> Spatial reasoning questions are challenging even for GPT-4o but Magma can answer relatively well despite relying on much fewer pretraining data</p>
+                </div>
+              </div>
+              </td>
+            </tr>
+          </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;margin-top: -40px;">Multimodal Understanding</h2>
+          <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
+          <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths ">
+          <div class="content has-text-justified">
+
+            <tr>
+              <td>
+                <div class="row">
+                  <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                    <img src="./static/images/magma_video_qa.png" style="width: 100%;">
+                </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Zero-shot Video QA benchmarks.</strong> <strong>Magma</strong> performs competitively and even outperforms some state-of-the-art approaches such as Video-Llama2 and ShareGPT4Video on most benchmarks, despite using much fewer video instruction tuning data.</p>
                 </div>
               </div>
               </td>
