@@ -104,7 +104,7 @@
   
                   <!-- arXiv Link. -->
                   <span class="link-block">
-                    <a target="_blank" href="https://arxiv.org/abs/2412.10345"
+                    <a target="_blank" href=""
                        class="external-link button is-normal is-rounded is-dark">
                       <span class="icon">
                           <i class="ai ai-arxiv"></i>
@@ -113,7 +113,7 @@
                     </a>
                   </span>
                   <span class="link-block">
-                    <a href="https://github.com/FrankZheng2022/tracevla"
+                    <a href="https://github.com/microsoft/Magma"
                        class="external-link button is-normal is-rounded is-dark">
                       <span class="icon">
                           <i class="fab fa-github"></i>
@@ -123,7 +123,7 @@
                     </span>
                     <!-- Dataset Link. -->
                     <span class="link-block">
-                      <a href="https://huggingface.co/collections/furonghuang-lab/tracevla-677d98483d23e9cec903d076"
+                      <a href=""
                          class="external-link button is-normal is-rounded is-dark">
                         <span class="icon">
                             <img src="static/images/hf_icon.svg" />
@@ -133,7 +133,7 @@
                       </span>
 
                   <span class="link-block">
-                    <a target="_blank" href="https://x.com/cheryyun_l/status/1877746315297230874"
+                    <a target="_blank" href=""
                        class="external-link button is-normal is-rounded is-dark">
                       <span class="icon">
                           <i class="fab fa-twitter"></i>
@@ -160,14 +160,12 @@
     <div class="container is-max-desktop">
       <div class="hero-body">
         <div align="center">
-          <img src="./static/images/tracevla.png" alt="Image description" width="100%">
+          <img src="./static/images/magma_teaser.png" alt="Image description" width="100%">
         </div>  
         <br> 
         <!-- <h2 class="subtitle has-text-centered"> -->
         <h2 class="subtitle">
-          <!-- Given a scene, our approach (VRB) learns  <strong> actionable representations </strong> for robot learning. VRB predicts contact points and a post-contact trajectory learned from <strong> human videos </strong>.  -->
-          <strong>Visual trace prompting</strong> enhances VLA models' spatial-temporal understanding, boosting manipulation performance.<br>
-          In the inputs of <strong>TraceVLA</strong>, the first image shows the original robot’s observation, while the second contains the same image with overlaid visual traces. A separator token is then inserted between the visual tokens of these two images, then concatenating with text tokens and feeding into the underlying vision language model backbone to output action tokens.
+          <strong>Magma</strong> is the <span style="color: rgb(182, 30, 30);"><em>first</em></span> foundation model that is capable of interpreting and grounding multimodal inputs within its environment. Given a described goal, <strong>Magma</strong> is able to formulate plans and execute actions to achieve it. By effectively transferring knowledge from freely available visual and language data, <strong>Magma</strong> bridges verbal, spatial and temporal intelligence to navigate complex tasks and settings.
         </h2>
         
       </div>
@@ -187,10 +185,10 @@
       <div class="columns is-centered has-text-centered">
         <div class="column is-two-thirds ">
           <div class="content has-text-justified">
-            We present <strong>Magma</strong>, a foundation model serving multimodal AI agentic tasks in both the digital and physical worlds.  \magma is a significant extension of vision-language (VL) models in that the former not only retains the VL understanding ability (verbal intelligence) of the latter, but is also equipped with the ability to plan and act in the visual-spatial world (spatial intelligence) and to complete agentic tasks ranging from UI navigation to robot manipulation.
-            Magma is pretrained on large amounts of heterogeneous VL datasets including images, videos and robotics data, where the actionable visual objects (e.g., clickable buttons in GUI) in images are labeled by Set-of-Mark (SoM) and the object movements (e.g., the trace of a robotic arm) in videos are labeled by Trace-of-Mark (ToM). 
+            We present <strong>Magma</strong>, a foundation model serving multimodal AI agentic tasks in both the digital and physical worlds.  <strong>Magma</strong> is a significant extension of vision-language (VL) models in that the former not only retains the VL understanding ability (verbal intelligence) of the latter, but is also equipped with the ability to plan and act in the visual-spatial world (spatial intelligence) and to complete agentic tasks ranging from UI navigation to robot manipulation.
+            <strong>Magma</strong> is pretrained on large amounts of heterogeneous VL datasets including images, videos and robotics data, where the actionable visual objects (e.g., clickable buttons in GUI) in images are labeled by Set-of-Mark (SoM) and the object movements (e.g., the trace of a robotic arm) in videos are labeled by Trace-of-Mark (ToM). 
             Extensive experiments show that SoM and ToM facilitate the acquisition of spatial intelligence from large-scale training data.
-            Magma creates new state-of-the-art results on UI navigation and robotic manipulation tasks, outperforming previous models that are tailored specifically to these tasks. On VL tasks, Magma also compares favorably to popular VL models that are trained on much larger datasets.
+            <strong>Magma</strong> creates new state-of-the-art results on UI navigation and robotic manipulation tasks, outperforming previous models that are tailored specifically to these tasks. On VL tasks, Magma also compares favorably to popular VL models that are trained on much larger datasets.
           </div>
         </div>
         </div>
@@ -249,8 +247,35 @@
             <div class="content has-text-justified">
               <p><strong>TraceVLA</strong> masters soft object manipulation, pick-and-place operations, and object movement, demonstrating reliable performance in both in-distribution and out-of-distribution generalization tasks.</p>
             </div>
+
+            <div class="columns is-vcentered is-multiline interpolation-panel">
+              <div class="column is-full" style="text-align: center; margin-bottom: 0; padding-bottom: 0;">  
+                <h5 style="font-size: 24px; margin-bottom: 1px;">Pick Place Hotdog Sausage</h5>
+              </div>
+              <div class="column is-half" style="text-align: center; padding-top: 0;"> 
+                  <div style="width: 80%; display: inline-block;">
+                    <div style="text-align: center; margin-top: 1px;">
+                      <strong>Magma</strong>
+                    </div>
+                      <video autoplay controls muted loop playsinline width="100%">
+                          <source src="static/videos/fold_tracevla.mp4" type="video/mp4">
+                      </video>
+                  </div>
+              </div>
+              <div class="column is-half" style="text-align: center; padding-top: 0;"> 
+                  <div style="width: 80%; display: inline-block;">
+                    <div style="text-align: center; margin-top: 1px;">
+                      OpenVLA
+                    </div>
+                      <video autoplay controls muted loop playsinline width="100%">
+                          <source src="static/videos/fold_openvla.mp4" type="video/mp4">
+                      </video>
+                  </div>
+              </div>
+          </div>
+
             <div class="columns is-vcentered interpolation-panel">
-              <div class="column  has-text-centered">
+              <div class="column has-text-centered">
                 <h5>Fold Cloth</h5>
                 <p style="font-size: 15px; color: #2a2727; margin: 2px 10%; line-height: 1.2;">
                   (In-Distribution)
@@ -272,7 +297,8 @@
                 </div>
               </div>
               </div>
-              <div class="column  has-text-centered">
+              
+              <div class="column is-half  has-text-centered">
                 <h5>Pickplace Corn Pot</h5>
                 <p style="font-size: 15px; color: #2a2727; margin: 2px 10%; line-height: 1.2;">
                   (Out-of-Distribution: Unseen Task)
@@ -343,52 +369,6 @@
               </div>
             </div>
   
-            <div class="columns is-vcentered interpolation-panel">
-              <div class="column  has-text-centered">
-                <h5>Pick Eggplant on Plate</h5>
-                <p style="font-size: 15px; color: #2a2727; margin: 2px 10%; line-height: 1.2;">
-                  (Out-of-Distribution: Unseen Task)
-                </p>
-                <div style="width: 49%; display: inline-block;">
-                  <video autoplay controls muted loop playsinline width="100%">
-                      <source src="static/videos/eggplant_tracevla.mp4" type="video/mp4">
-                  </video>
-                  <div style="text-align: center; margin-top: 5px;">
-                      TraceVLA
-                  </div>
-              </div>
-              <div style="width: 49%; display: inline-block;">
-                <video autoplay controls muted loop playsinline width="100%">
-                    <source src="static/videos/eggplant_openvla.mp4" type="video/mp4">
-                </video>
-                <div style="text-align: center; margin-top: 5px;">
-                    OpenVLA
-                </div>
-              </div>
-              </div>
-              <div class="column  has-text-centered">
-                <h5>Push Cloth Left to Right</h5>
-                <p style="font-size: 15px; color: #2a2727; margin: 2px 10%; line-height: 1.2;">
-                  (Out-of-Distribution: Distracting Object, Inverse Motion)
-                </p>
-                <div style="width: 49%; display: inline-block;">
-                  <video autoplay controls muted loop playsinline width="100%">
-                    <source src="static/videos/push_tracevla.mp4" type="video/mp4">
-                  </video>
-                  <div style="text-align: center; margin-top: 5px;">
-                    TraceVLA
-                  </div>
-                </div>
-                <div style="width: 49%; display: inline-block;">
-                  <video autoplay controls muted loop playsinline width="100%">
-                    <source src="static/videos/push_openvla.mp4" type="video/mp4">
-                  </video>
-                  <div style="text-align: center; margin-top: 5px;">
-                    OpenVLA
-                  </div>
-                </div>
-              </div>
-            </div>
 
               <div class="columns is-centered ">
                 <div class="column">
@@ -397,7 +377,7 @@
             </div>
               <div class="row">
                 <div class="col">
-                  <img src="./static/images/real.jpg" alt="Image description" width="100%">
+                  <img src="./static/images/magma_real.png" alt="Image description" width="80%">
                 </div>
               </div>
               <div class="columns is-centered ">
@@ -431,7 +411,7 @@
               <td>
                 <div class="row">
                   <div class="col">
-                    <img src="./static/images/simpler-overall.png" alt="Image description" width="100%">
+                    <img src="./static/images/magma_simpler.png" alt="Image description" width="100%">
                   </div>
                 </div>
                 <div class="columns is-centered ">
@@ -439,16 +419,6 @@
                       <p style="text-align: left;font-size: 18px"><strong>TraceVLA</strong> consistently outperforms OpenVLA across various tasks and evaluation metrics in the SimplerEnv Google robot tasks. The improvements are evident in both the full-scale 7B models (<strong>TraceVLA</strong> vs OpenVLA) and their 4B versions (<strong>TraceVLA-Phi3</strong> vs OpenVLA-Phi3). </p>
                 </div>
               </div>
-              <div class="row">
-                <div class="col">
-                  <img src="./static/images/simpler-agg.png" alt="Image description" width="100%">
-                </div>
-              </div>
-              <div class="columns is-centered ">
-                <div class="column">
-                    <p style="text-align: left;font-size: 18px"><strong>Environmental Variant Aggregation</strong>: <strong>TraceVLA</strong> shows substantial enhancements under camera orientation changes, distractor presence, and background alterations, with an average improvement exceeding <strong>20%</strong> in these categories.</p>
-              </div>
-            </div>
               </td>
             </tr>
           </div>
@@ -512,9 +482,9 @@
       <div class="columns is-centered has-text-centered">
         <div class="column is-8">
           <div class="content">
-            <a style="color:hsla(39, 82%, 55%, 0.862)" href="#top"><i class="fa fa-arrow-up"></i><br/>Return to top</a>
+            <a style="color:hsla(194, 67%, 58%, 0.862)" href="#top"><i class="fa fa-arrow-up"></i><br/>Return to top</a>
             <p>
-              Website adapted from <a style="color:hsla(39, 82%, 55%, 0.862)" href="https://github.com/nerfies/nerfies.github.io">NeRFies</a> and <a style="color:hsla(39, 82%, 55%, 0.862)" href="https://github.com/tracevla/tracevla.github.io">TraceVLA</a> under <a style="color:hsla(39, 82%, 55%, 0.862)"
+              Website adapted from <a style="color:hsla(194, 67%, 58%, 0.862)" href="https://github.com/nerfies/nerfies.github.io">NeRFies</a> and <a style="color:hsla(194, 67%, 58%, 0.862)" href="https://github.com/tracevla/tracevla.github.io">TraceVLA</a> under <a style="color:hsla(194, 67%, 58%, 0.862)"
               href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International</a>
             </p>
           </div>
