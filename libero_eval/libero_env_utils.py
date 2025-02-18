@@ -2,6 +2,8 @@
 
 import math
 import os
+import torch
+import random
 from PIL import Image
 import imageio
 import numpy as np
@@ -99,3 +101,13 @@ def save_rollout_video(replay_images, success, task_description):
     video_writer.close()
     print(f"Saved libero video at path {video_path}")
     return video_path
+
+def set_seed_everywhere(seed: int):
+    """Sets the random seed for Python, NumPy, and PyTorch functions."""
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    os.environ["PYTHONHASHSEED"] = str(seed)

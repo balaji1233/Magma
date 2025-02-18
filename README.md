@@ -99,7 +99,7 @@ while step < max_steps + num_steps_wait:
         continue
     
     img = get_libero_obs(obs, resize_size=256)
-    replay_images.append(np.array(img))
+    replay_images.append(img)
     action = get_magma_action(magma, processor, img, prompt, task_suite_name)
     obs, _, done, _ = env.step(action.tolist())
     step += 1
@@ -107,18 +107,18 @@ while step < max_steps + num_steps_wait:
 env.close()
 save_rollout_video(replay_images, success=done, task_description=task_description)
 ```
-**Notes:** The above script only tests one episode on a single task and visualizes MAGMA's trajectory with saved video. For comprehensive evaluation on each task suite, please use `libero_eval/libero_eval.py`.
+**Notes:** The above script only tests one episode on a single task and visualizes MAGMA's trajectory with saved video. For comprehensive evaluation on each task suite, please use `libero_eval/eval_magma_libero.py`.
 ```
 python libero_eval/eval_magma_libero.py \
-  --pretrained_checkpoint microsoft/magma-8b-libero-object \
+  --model_name microsoft/magma-8b-libero-object \
   --task_suite_name libero_object \
 
 python libero_eval/eval_magma_libero.py \
-  --pretrained_checkpoint microsoft/magma-8b-libero-spatial \
+  --model_name microsoft/magma-8b-libero-spatial \
   --task_suite_name libero_spatial \
 
 python libero_eval/eval_magma_libero.py \
-  --pretrained_checkpoint microsoft/magma-8b-libero-goal \
+  --model_name microsoft/magma-8b-libero-goal \
   --task_suite_name libero_goal \
 ```
 
