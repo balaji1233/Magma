@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """PyTorch Magma model."""
-
+import sys
 import math
 import re
-import os
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
 
@@ -45,7 +44,109 @@ from .image_tower_magma import MagmaImageTower
 logger = logging.get_logger(__name__)
 
 _CONFIG_FOR_DOC = "MagmaConfig"
-    
+
+
+def get_anyres_image_grid_shape(image_size, grid_pinpoints, patch_size):
+    """
+    Calculate the shape of the image patch grid after the preprocessing for images of any resolution.
+
+    Args:
+        image_size (`tuple`):
+            The size of the input image in the format (width, height).
+        grid_pinpoints (`List`):
+            A list containing possible resolutions. Each item in the list should be a tuple or list
+            of the form `(height, width)`.
+        patch_size (`int`):
+            The size of each image patch.
+
+    Returns:
+        tuple: The shape of the image patch grid in the format (width, height).
+    """
+    if not isinstance(grid_pinpoints, list):
+        raise ValueError("grid_pinpoints should be a list of tuples or lists")
+
+    # ! VERY IMPORTANT if image_size is tensor, must convert to into tuple, otherwise it will cause wrong calculate
+    if not isinstance(image_size, (list, tuple)):
+        if not isinstance(image_size, (torch.Tensor, np.ndarray)):
+            raise ValueError(
+                f"image_size invalid type: {type(image_size)} not valid, should be either list, tuple, np.ndarray or tensor"
+            )
+        image_size = image_size.tolist()
+
+    height, width = select_best_resolution(image_size, grid_pinpoints)
+    return height // patch_size, width // patch_size
+
+
+def image_size_to_num_patches(image_size, grid_pinpoints, patch_size: int):
+    """
+    Calculate the number of patches after the preprocessing for images of any resolution.
+
+    Args:
+        image_size (`Union[torch.LongTensor, np.ndarray, Tuple[int, int]):
+            The size of the input image in the format (height, width). ?
+        grid_pinpoints (`List`):
+            A list containing possible resolutions. Each item in the list should be a tuple or list
+            of the form `(height, width)`.
+        patch_size (`int`):
+            The size of each image patch.
+
+    Returns:
+        int: the number of patches
+    """
+    if not isinstance(grid_pinpoints, list):
+        raise ValueError("grid_pinpoints should be a list of tuples or lists")
+
+    # ! VERY IMPORTANT if image_size is tensor, must convert to into tuple, otherwise it will cause wrong calculate
+    if not isinstance(image_size, (list, tuple)):
+        if not isinstance(image_size, (torch.Tensor, np.ndarray)):
+            raise ValueError(f"image_size invalid type {type(image_size)} with value {image_size}")
+        image_size = image_size.tolist()
+
+    best_resolution = select_best_resolution(image_size, grid_pinpoints)
+    height, width = best_resolution
+    num_patches = 0
+    # consider change to ceil(height/patch_size)*ceil(width/patch_size) + 1
+    for i in range(0, height, patch_size):
+        for j in range(0, width, patch_size):
+            num_patches += 1
+    # add the base patch
+    num_patches += 1
+    return num_patches
+
+
+def unpad_image(tensor, original_size):
+    """
+    Unpads a PyTorch tensor of a padded and resized image.
+
+    Args:
+        tensor (`torch.Tensor`):
+            The image tensor, assumed to be of shape (num_channels, height, width).
+        original_size (`tuple`):
+            The original size of the image (height, width).
+
+    Returns:
+        `torch.Tensor`: The unpadded image tensor.
+    """
+    original_height, original_width = original_size
+    current_height, current_width = tensor.shape[1:]
+
+    original_aspect_ratio = original_width / original_height
+    current_aspect_ratio = current_width / current_height
+
+    if original_aspect_ratio > current_aspect_ratio:
+        scale_factor = current_width / original_width
+        new_height = int(original_height * scale_factor)
+        padding = (current_height - new_height) // 2
+        unpadded_tensor = tensor[:, padding : current_height - padding, :]
+    else:
+        scale_factor = current_height / original_height
+        new_width = int(original_width * scale_factor)
+        padding = (current_width - new_width) // 2
+        unpadded_tensor = tensor[:, :, padding : current_width - padding]
+
+    return unpadded_tensor
+
+
 @dataclass
 # Copied from transformers.models.idefics.modeling_idefics.IdeficsCausalLMOutputWithPast with Idefics->Magma
 class MagmaCausalLMOutputWithPast(ModelOutput):
@@ -340,24 +441,13 @@ MAGMA_INPUTS_DOCSTRING = r"""
 class MagmaForForCausalLM(MagmaPreTrainedModel):
     def __init__(self, config: MagmaConfig):
         super().__init__(config)
-
-        self.vision_tower = MagmaImageTower(config.vision_config, require_pretrained=False)
-        config.vision_config['mm_hidden_size'] = config.vision_config['mm_hidden_size'] \
-            if 'mm_hidden_size' in config.vision_config else self.vision_tower.hidden_size
-        config.vision_config['hidden_size'] = config.vision_config['hidden_size'] \
-            if 'hidden_size' in config.vision_config else self.config.text_config.hidden_size
+        self.vision_tower = MagmaImageTower(config.vision_config)
         self.multi_modal_projector = MagmaMultiModalProjector(config.vision_config)
 
         self.vocab_size = config.text_config.vocab_size
-        if hasattr(config.text_config, 'auto_map'):
-            del config.text_config.auto_map
-
         self.language_model = AutoModelForCausalLM.from_config(
-            config.text_config, 
-            # attn_implementation=config._attn_implementation, 
-            trust_remote_code=True
+            config.text_config, attn_implementation=config._attn_implementation
         )
-        
         self.pad_token_id = self.config.pad_token_id if self.config.pad_token_id is not None else -1
         self._padding_side = "left"  # set it to left by default, user can use setter to change padding_sides
 
@@ -373,6 +463,9 @@ class MagmaForForCausalLM(MagmaPreTrainedModel):
     #     import pdb; pdb.set_trace()
     #     kwargs["_from_auto"] = True
     #     return super().from_pretrained(pretrained_model_name_or_path, *model_args, **kwargs)
+
+    def init_spatial_pooling(self):
+        self.avg_pool = torch.nn.AvgPool2d((2,2))
 
     @property
     def padding_side(self):
@@ -405,40 +498,6 @@ class MagmaForForCausalLM(MagmaPreTrainedModel):
     def tie_weights(self):
         return self.language_model.tie_weights()
 
-    def load_special_module_from_ckpt(self, ckpt_path, torch_dtype=None):
-        from deepspeed.runtime.zero import Init
-        from deepspeed import zero
-        # Defer initialization for ZeRO-3 compatibility
-        # with Init(data_parallel_group=None):
-        #     # Initialize the special module
-        #     self.vision_tower = MagmaImageTower(self.config.vision_config, require_pretrained=False)
-
-        # Load checkpoint weights into the special module
-        checkpoint = torch.load(ckpt_path, map_location='cpu')
-        state_dict = {k.replace('visual.', ''): v for k, v in checkpoint.items() if 'visual.' in k}
-
-        # Convert checkpoint weights to match model's parameter dtype
-        if torch_dtype is None:
-            model_dtype = next(self.vision_tower.clip_vision_model.parameters()).dtype
-            for k, v in state_dict.items():
-                state_dict[k] = v.to(model_dtype)
-        else:
-            for k, v in state_dict.items():
-                state_dict[k] = v.to(torch_dtype)
-
-        # Temporarily gather parameters for loading (if ZeRO-3 is active)
-        with zero.GatheredParameters(list(self.vision_tower.parameters()), modifier_rank=0):
-            # Load the state dictionary
-            self.vision_tower.clip_vision_model.load_state_dict(state_dict, strict=False)
-            # After loading, ensure the module is on the correct device
-            for param in self.vision_tower.parameters():
-                param.data = param.data.to(self.device).to(torch_dtype)
-
-        # import pdb; pdb.set_trace()
-        # If using a DeepSpeed engine, attach the updated module
-        if hasattr(self, "deepspeed_engine"):
-            self.deepspeed_engine.module = self
-        
     def resize_token_embeddings(self, new_num_tokens: Optional[int] = None, pad_to_multiple_of=None) -> nn.Embedding:
         model_embeds = self.language_model.resize_token_embeddings(new_num_tokens, pad_to_multiple_of)
         # update vocab size
@@ -659,6 +718,60 @@ class MagmaForForCausalLM(MagmaPreTrainedModel):
 
         return final_embedding, final_attention_mask, position_ids, final_labels
 
+    def pack_image_features(self, image_features, image_sizes, image_newline=None):
+        """
+        Reshape, unpad and then pack each image_feature into a single image_features tensor containing all visual vectors.
+
+        Args:
+            image_features (`List[torch.Tensor]` of length num_images, each of shape `(num_patches, image_length, embed_dim)`)
+                List of image feature tensor, each contains all the visual feature of all patches.
+            image_sizes (`torch.Tensor` of shape `(num_images, 2)`)
+                Actual image size of each images (H, W).
+            image_newline (`torch.Tensor` of shape `(embed_dim)`)
+                New line embedding vector.
+        Returns:
+            image_features (`torch.Tensor` of shape `(all_feat_len, embed_dim)`)
+            feature_lens (`List[int]`)
+                token length of each image in image_features
+        """
+        new_image_features = []
+        feature_lens = []
+        for image_idx, image_feature in enumerate(image_features):
+            if image_feature.shape[0] > 1:
+                base_image_feature = image_feature[0]
+                image_feature = image_feature[1:]
+                height = width = self.config.vision_config.image_size // self.config.vision_config.patch_size
+                if height * width != base_image_feature.shape[0]:
+                    raise ValueError("The number of patches is not consistent with the image size.")
+                num_patch_width, num_patch_height = get_anyres_image_grid_shape(
+                    image_sizes[image_idx],
+                    self.config.image_grid_pinpoints,
+                    self.config.vision_config.image_size,
+                )
+                image_feature = image_feature.view(num_patch_height, num_patch_width, height, width, -1)
+                image_feature = image_feature.permute(4, 0, 2, 1, 3).contiguous()
+                image_feature = image_feature.flatten(1, 2).flatten(2, 3)
+                image_feature = unpad_image(image_feature, image_sizes[image_idx])
+                if image_newline is not None:
+                    image_feature = torch.cat(
+                        (
+                            image_feature,
+                            image_newline[:, None, None].expand(*image_feature.shape[:-1], 1).to(image_feature.dtype),
+                        ),
+                        dim=-1,
+                    )
+                image_feature = image_feature.flatten(1, 2).transpose(0, 1)
+                image_feature = torch.cat((base_image_feature, image_feature), dim=0)
+            else:
+                image_feature = image_feature[0]
+                if image_newline is not None:
+                    image_feature = torch.cat((image_feature, image_newline[None].to(image_feature)), dim=0)
+            new_image_features.append(image_feature)
+            feature_lens.append(image_feature.size(0))
+        image_features = torch.cat(new_image_features, dim=0)
+        feature_lens = torch.tensor(feature_lens, dtype=torch.long, device=image_features.device)
+        return image_features, feature_lens
+
     @add_start_docstrings_to_model_forward(MAGMA_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=MagmaCausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
     def forward(
@@ -736,8 +849,7 @@ class MagmaForForCausalLM(MagmaPreTrainedModel):
                     pixels_values_list = sum(pixel_values, [])
                     image_sizes_list = sum(image_sizes, [])
                 else:
-                    image_num_patches = [(imsize[imsize.sum(1) > 0,0] * imsize[imsize.sum(1) > 0,1]).tolist() for imsize in image_sizes]       
-                    # image_num_patches = [(imsize[:,0]*imsize[:,1]).tolist() for imsize in image_sizes]             
+                    image_num_patches = [(imsize[:,0]*imsize[:,1]).tolist() for imsize in image_sizes]
                     # figure out if pixel_values is concatenated or stacked
                     if pixel_values.dim() == 5:
                         # stacking when input is (batch_size, num_patches, num_channels, height, width)
@@ -769,6 +881,11 @@ class MagmaForForCausalLM(MagmaPreTrainedModel):
                     _pixel_values_list_temp = sum(_pixel_values_list, ())
                     _pixel_values_list_temp = torch.cat(_pixel_values_list_temp, dim=0)
                     image_features = self.vision_tower(_pixel_values_list_temp)[vision_feature_layer].permute(0, 2, 3, 1)
+
+                    if self.config.mm_use_spatial_pooling: # N, C, H, W
+                        image_features = self.avg_pool(image_features.permute(0, 3, 1, 2))
+                        image_features = image_features.permute(0, 2, 3, 1)
+
                     image_features = self.multi_modal_projector((image_features, None))
 
                     num_crops_list = [_image_size[0]*_image_size[1] for _image_size in _image_sizes_list_temp]
@@ -839,36 +956,8 @@ class MagmaForForCausalLM(MagmaPreTrainedModel):
                 attention_mask = torch.cat((extended_attention_mask, attention_mask[:, -target_length:]), dim=1)
 
                 position_ids = torch.sum(attention_mask, dim=1).unsqueeze(-1) - 1
-        
-        # outputs = self.language_model(
-        #     attention_mask=attention_mask,
-        #     position_ids=position_ids,
-        #     past_key_values=past_key_values,
-        #     inputs_embeds=inputs_embeds,
-        #     use_cache=use_cache,
-        #     output_attentions=output_attentions,
-        #     output_hidden_states=output_hidden_states,
-        #     return_dict=return_dict,
-        # )
 
-        # logits = outputs[0]
-        # loss = None
-        # if labels is not None:
-        #     # Shift so that tokens < n predict n
-        #     if attention_mask is not None:
-        #         shift_attention_mask = attention_mask[..., 1:]
-        #         shift_logits = logits[..., :-1, :][shift_attention_mask.to(logits.device) != 0].contiguous()
-        #         shift_labels = labels[..., 1:][shift_attention_mask.to(labels.device) != 0].contiguous()
-        #     else:
-        #         shift_logits = logits[..., :-1, :].contiguous()
-        #         shift_labels = labels[..., 1:].contiguous()
-        #     # Flatten the tokens
-        #     loss_fct = nn.CrossEntropyLoss()
-        #     loss = loss_fct(
-        #         shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1).to(shift_logits.device)
-        #     )
-
-        outputs = self.language_model.model(
+        outputs = self.language_model(
             attention_mask=attention_mask,
             position_ids=position_ids,
             past_key_values=past_key_values,
@@ -876,25 +965,29 @@ class MagmaForForCausalLM(MagmaPreTrainedModel):
             use_cache=use_cache,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
-            return_dict=return_dict
+            return_dict=return_dict,
         )
 
-        hidden_states = outputs[0]
+        logits = outputs[0]
 
         loss = None
-
-        if labels is not None and self.training:
-            valid_mask = labels[..., 1:] != -100
-            shift_logits = self.language_model.lm_head(hidden_states[:,:-1][valid_mask]).contiguous()
-            shift_logits = shift_logits.view(-1, self.language_model.config.vocab_size)
-            logits = shift_logits # dummy logits
-            shift_labels = labels[..., 1:][valid_mask].contiguous()
-            shift_labels = shift_labels.to(shift_logits.device)
+        if labels is not None:
+            # Shift so that tokens < n predict n
+            if attention_mask is not None:
+                shift_attention_mask = attention_mask[..., 1:]
+                shift_logits = logits[..., :-1, :][shift_attention_mask.to(logits.device) != 0].contiguous()
+                shift_labels = labels[..., 1:][shift_attention_mask.to(labels.device) != 0].contiguous()
+            else:
+                shift_logits = logits[..., :-1, :].contiguous()
+                shift_labels = labels[..., 1:].contiguous()
+            # Flatten the tokens
             loss_fct = nn.CrossEntropyLoss()
-            loss = loss_fct(shift_logits, shift_labels)
+            loss = loss_fct(
+                shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1).to(shift_logits.device)
+            )
 
-            # localize the positions for shift_labels where the id is in betweek [config.tokenizer_vocab_size-256, config.tokenizer_vocab_size]
-            valid_indices = (shift_labels<self.config.tokenizer_vocab_size) & (shift_labels>=self.config.tokenizer_vocab_size-256)
+            # localize the positions for shift_labels where the id is in betweek [128000-256, 128000]
+            valid_indices = (shift_labels<128000) & (shift_labels>=128000-256)
             if valid_indices.sum() > 0:
                 action_labels = shift_labels[valid_indices]
                 action_logits = shift_logits[valid_indices]
@@ -918,9 +1011,6 @@ class MagmaForForCausalLM(MagmaPreTrainedModel):
                 else:
                     action_accuracy = action_accuracy[action_accuracy != 0]
                     wandb.log({"action_accuracy": action_accuracy.mean().item()})
-        else:
-            logits = self.language_model.lm_head(hidden_states)
-            logits = logits.float()
 
         if not return_dict:
             output = (logits,) + outputs[1:]
@@ -1005,21 +1095,19 @@ class MagmaForForCausalLM(MagmaPreTrainedModel):
 class MagmaForConditionalGeneration(MagmaPreTrainedModel):
     def __init__(self, config: MagmaConfig):
         super().__init__(config)
-
-        self.vision_tower = MagmaImageTower(config.vision_config, require_pretrained=('magma' not in config.name_or_path))
+        self.vision_tower = MagmaImageTower(config.vision_config)
         self.multi_modal_projector = MagmaMultiModalProjector(config.vision_config)
 
         self.vocab_size = config.text_config.vocab_size
         self.language_model = AutoModelForCausalLM.from_config(
-            config.text_config, 
-            # attn_implementation=config._attn_implementation, 
-            trust_remote_code=True
+            config.text_config, attn_implementation=config._attn_implementation
         )
-        
         self.pad_token_id = self.config.pad_token_id if self.config.pad_token_id is not None else -1
         self._padding_side = "left"  # set it to left by default, user can use setter to change padding_sides
-
         self.post_init()
+
+    def init_spatial_pooling(self):
+        self.avg_pool = torch.nn.AvgPool2d((2,2))
 
     @property
     def padding_side(self):
@@ -1271,6 +1359,60 @@ class MagmaForConditionalGeneration(MagmaPreTrainedModel):
 
         return final_embedding, final_attention_mask, position_ids, final_labels
 
+    def pack_image_features(self, image_features, image_sizes, image_newline=None):
+        """
+        Reshape, unpad and then pack each image_feature into a single image_features tensor containing all visual vectors.
+
+        Args:
+            image_features (`List[torch.Tensor]` of length num_images, each of shape `(num_patches, image_length, embed_dim)`)
+                List of image feature tensor, each contains all the visual feature of all patches.
+            image_sizes (`torch.Tensor` of shape `(num_images, 2)`)
+                Actual image size of each images (H, W).
+            image_newline (`torch.Tensor` of shape `(embed_dim)`)
+                New line embedding vector.
+        Returns:
+            image_features (`torch.Tensor` of shape `(all_feat_len, embed_dim)`)
+            feature_lens (`List[int]`)
+                token length of each image in image_features
+        """
+        new_image_features = []
+        feature_lens = []
+        for image_idx, image_feature in enumerate(image_features):
+            if image_feature.shape[0] > 1:
+                base_image_feature = image_feature[0]
+                image_feature = image_feature[1:]
+                height = width = self.config.vision_config.image_size // self.config.vision_config.patch_size
+                if height * width != base_image_feature.shape[0]:
+                    raise ValueError("The number of patches is not consistent with the image size.")
+                num_patch_width, num_patch_height = get_anyres_image_grid_shape(
+                    image_sizes[image_idx],
+                    self.config.image_grid_pinpoints,
+                    self.config.vision_config.image_size,
+                )
+                image_feature = image_feature.view(num_patch_height, num_patch_width, height, width, -1)
+                image_feature = image_feature.permute(4, 0, 2, 1, 3).contiguous()
+                image_feature = image_feature.flatten(1, 2).flatten(2, 3)
+                image_feature = unpad_image(image_feature, image_sizes[image_idx])
+                if image_newline is not None:
+                    image_feature = torch.cat(
+                        (
+                            image_feature,
+                            image_newline[:, None, None].expand(*image_feature.shape[:-1], 1).to(image_feature.dtype),
+                        ),
+                        dim=-1,
+                    )
+                image_feature = image_feature.flatten(1, 2).transpose(0, 1)
+                image_feature = torch.cat((base_image_feature, image_feature), dim=0)
+            else:
+                image_feature = image_feature[0]
+                if image_newline is not None:
+                    image_feature = torch.cat((image_feature, image_newline[None].to(image_feature)), dim=0)
+            new_image_features.append(image_feature)
+            feature_lens.append(image_feature.size(0))
+        image_features = torch.cat(new_image_features, dim=0)
+        feature_lens = torch.tensor(feature_lens, dtype=torch.long, device=image_features.device)
+        return image_features, feature_lens
+
     @add_start_docstrings_to_model_forward(MAGMA_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=MagmaCausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
     def forward(
@@ -1339,9 +1481,10 @@ class MagmaForConditionalGeneration(MagmaPreTrainedModel):
             # 2. Merge text and images
             if pixel_values is not None and input_ids.shape[1] != 1 and pixel_values.size(0) > 0:
                 # ! infer image_num_patches from image_sizes
+                num_patches_per_crop = (self.config.vision_config['img_size'] // 32) ** 2
+                image_num_patches = [imsize[0]*imsize[1]*num_patches_per_crop for imsize in image_sizes]
                 # figure out if pixel_values is concatenated or stacked
                 if pixel_values.dim() == 5:
-                    image_num_patches = [(imsize[:,0]*imsize[:,1]).tolist() for imsize in image_sizes]
                     # stacking when input is (batch_size, num_patches, num_channels, height, width)
                     _pixel_values_list = [
                         pix_val[:num_patch] for pix_val, num_patch in zip(pixel_values, image_num_patches)
@@ -1365,6 +1508,11 @@ class MagmaForConditionalGeneration(MagmaPreTrainedModel):
                         selected_image_features.append(selected_image_feature)
                 elif self.config.vision_config['img_anyres_strategy'] == "crop":
                     image_features = self.vision_tower(pixel_values)[vision_feature_layer].permute(0, 2, 3, 1)
+
+                    if self.config.mm_use_spatial_pooling: # N, C, H, W
+                        image_features = self.avg_pool(image_features.permute(0, 3, 1, 2))
+                        image_features = image_features.permute(0, 2, 3, 1)
+
                     image_features = self.multi_modal_projector((image_features, None))
                     num_patches_for_images = [(imsize[0]*imsize[1]).item() for imsize in image_sizes]
                     image_features_split = torch.split(image_features, num_patches_for_images, dim=0)

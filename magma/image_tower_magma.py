@@ -16,10 +16,6 @@
 """Image processor class for Magma."""
 
 from typing import List, Optional, Union
-import logging
-
-# Configure root logger
-logging.basicConfig(level=logging.INFO)
 
 import numpy as np
 import torchvision
@@ -34,9 +30,8 @@ from transformers.image_utils import (
     make_list_of_images,
     valid_images,
 )
-
 from transformers.utils import TensorType, is_vision_available, logging
-logging.set_verbosity_info()
+
 logger = logging.get_logger(__name__)
 
 
@@ -50,6 +45,7 @@ import torchvision
 
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
+import logging
 import json
 import torch
 import torch.nn as nn
@@ -74,6 +70,8 @@ def _get_hf_config(model_id, cache_dir=None):
     with open(config_path, 'r', encoding='utf-8') as f:
         config = json.load(f)
     return config
+
+logger = logging.getLogger(__name__)
 
 def create_model(
         model_name: str,
@@ -115,7 +113,7 @@ def create_model(
         device = torch.device(device)
 
     if pretrained and pretrained.lower() == 'openai':
-        logger.info(f'Loading pretrained {model_name} from OpenAI.')
+        logging.info(f'Loading pretrained {model_name} from OpenAI.')
         model = load_openai_model(
             model_name,
             precision=precision,
@@ -125,9 +123,9 @@ def create_model(
     else:
         model_cfg = model_cfg or get_model_config(model_name)
         if model_cfg is not None:
-            logger.info(f'Loaded {model_name} model config.')
+            logging.info(f'Loaded {model_name} model config.')
         else:
-            logger.error(f'Model config for {model_name} not found; available models {list_models()}.')
+            logging.error(f'Model config for {model_name} not found; available models {list_models()}.')
             raise RuntimeError(f'Model config for {model_name} not found.')
 
         if force_quick_gelu:
@@ -197,7 +195,7 @@ def create_model(
             model.to(device=device, dtype=dtype)
         # else:
         #     model.to(device=device)
-        
+
         pretrained_loaded = False
         if pretrained:
             checkpoint_path = ''
@@ -209,20 +207,19 @@ def create_model(
                 checkpoint_path = pretrained
 
             # if checkpoint_path:
-            #     logger.info(f'Loading pretrained {model_name} weights ({pretrained}).')
+            #     logging.info(f'Loading pretrained {model_name} weights ({pretrained}).')
             #     open_clip.load_checkpoint(model, checkpoint_path)
             # else:
             #     error_str = (
             #         f'Pretrained weights ({pretrained}) not found for model {model_name}.'
             #         f' Available pretrained tags ({list_pretrained_tags_by_model(model_name)}.')
-            #     logger.warning(error_str)
+            #     logging.warning(error_str)
             #     raise RuntimeError(error_str)
             # pretrained_loaded = True
-        elif has_hf_hub_prefix and require_pretrained:
-            logger.info(f'Loading pretrained {model_name} weights ({checkpoint_path}).')
-            print(f'Loading pretrained {model_name} weights ({checkpoint_path}).')
-            open_clip.load_checkpoint(model, checkpoint_path)
-            pretrained_loaded = True
+        elif has_hf_hub_prefix:
+            logging.info(f'Loading pretrained {model_name} weights ({checkpoint_path}).')
+            # open_clip.load_checkpoint(model, checkpoint_path)
+            # pretrained_loaded = True
 
         if require_pretrained and not pretrained_loaded:
             # callers of create_model_from_pretrained always expect pretrained weights
@@ -288,28 +285,27 @@ def create_model_and_transforms(
     )
 
 class D2CLIP_HF(nn.Module):
-    def __init__(self, config, **kwargs):    
+    def __init__(self, config):    
         super().__init__()
         self.model_name = config['vision_backbone']
-        
-        require_pretrained = kwargs.get('require_pretrained', False)
+
         if self.model_name == "convnextxxlarge":
-            clip_model = create_model_and_transforms('hf-hub:laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg', require_pretrained=require_pretrained)
+            clip_model = create_model_and_transforms('hf-hub:laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg')
         elif self.model_name == "convnextlarge":
-            clip_model = create_model_and_transforms('hf-hub:laion/CLIP-convnext_large-laion2B-s34B-b82K-augreg', require_pretrained=require_pretrained)
+            clip_model = create_model_and_transforms('hf-hub:laion/CLIP-convnext_large-laion2B-s34B-b82K-augreg')
 
         self.clip_vision_model = clip_model.visual
 
         model_name = self.model_name.lower()
         assert 'convnext' in model_name, f"Only convnext backbone is supported for Magma model, but got {model_name}"
         self.model_type = 'convnext'
-        if 'xxlarge' in model_name:
-            self.output_channels = [384, 384, 768, 1536, 3072]
-        elif 'large' in model_name:
-            self.output_channels = [192, 192, 384, 768, 1536]    
-        elif 'base' in model_name:
+        if 'base' in model_name:
             self.output_channels = [128, 128, 256, 512, 1024]
-
+        elif 'large' in model_name:
+            self.output_channels = [192, 192, 384, 768, 1536]
+        elif 'xxlarge' in model_name:
+            self.output_channels = [384, 384, 768, 1536, 3072]
+    
         self._out_feature_strides = {
             "res2": 4,
             "res3": 8,
@@ -337,10 +333,7 @@ class D2CLIP_HF(nn.Module):
         # out['clip_vis_dense'] = x
         # return out
         x = self.clip_vision_model.trunk.stem(x)
-        if gradient_checkpointing:
-            x = checkpoint.checkpoint(self.clip_vision_model.trunk.stages, x)
-        else:
-            x = self.clip_vision_model.trunk.stages(x)
+        x = self.clip_vision_model.trunk.stages(x)
         out['clip_vis_dense'] = x
         return out
             
@@ -369,15 +362,9 @@ class MagmaImageTower(D2CLIP_HF):
 
     def __init__(
         self,
-        config, 
-        **kwargs
+        config
     ) -> None:
-        super().__init__(config, **kwargs)
-
-    @property
-    def hidden_size(self):
-        return self.output_channels[-1]
-
+        super().__init__(config)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         r"""

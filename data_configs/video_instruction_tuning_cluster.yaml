@@ -1,0 +1,7 @@
+# a list of all the data paths
+DATA_PATH: 
+  - "/path/to/LLaVA-Video-178K"
+  - "/path/to/ShareGPT4Video"
+IMAGE_FOLDER:
+  - "/tmp/path/"
+  - "/tmp/path/"

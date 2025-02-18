@@ -15,6 +15,7 @@
 #    limitations under the License.
 
 import os
+import sys
 import copy
 from dataclasses import dataclass, field
 import json
@@ -30,7 +31,6 @@ import transformers
 import tokenizers
 import random
 import re
-import cv2
 import collections
 from io import BytesIO
 from transformers.integrations.deepspeed import (
@@ -47,15 +47,13 @@ from magma.utils.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE
 from magma.image_processing_magma import MagmaImageProcessor
 from magma.processing_magma import MagmaProcessor
 from magma.modeling_magma import MagmaForForCausalLM
-from magma.configuration_magma import MagmaConfig
 from transformers import (
     AutoModelForCausalLM,
     AutoProcessor,
     BitsAndBytesConfig,
     Trainer,
-    TrainingArguments,    
+    TrainingArguments,
 )
-from transformers import AutoTokenizer, AutoConfig
 from transformers.feature_extraction_utils import BatchFeature
 from transformers.trainer import get_model_param_count
 from datasets import load_dataset
@@ -96,19 +94,22 @@ class ModelArguments:
     vision_backbone: Optional[str] = field(default="convnextlarge")
     feature_outs: Optional[str] = field(default="encoder+decoder")
     tune_vision_tokenizer: Optional[str] = field(default='none')
+    segtok_posembed: Optional[str] = field(default='sincos')
+    segtok_num_queries: Optional[int] = field(default=201)
+    segtok_decoder_dim: Optional[int] = field(default=512)
     mm_vision_select_layer: Optional[int] = field(default=-1)   # default to the last layer
     pretrain_mm_mlp_adapter: Optional[str] = field(default=None)
     mm_projector_type: Optional[str] = field(default='linear')
+    mm_use_im_start_end: bool = field(default=False)
     mm_use_trace_start_end: bool = field(default=False)
     mm_use_trace_speed: bool = field(default=False)
     mm_use_image_start_end: bool = field(default=False)
-    mm_use_image_history: bool = field(default=False)
-    mm_use_som_tom: bool = field(default=True)
-    mm_use_som_tom_orig_img: bool = field(default=False)
     spatial_quant_size: Optional[int] = field(default=256)
     remove_static_trace_pts: bool = field(default=False)
     mm_use_im_patch_token: bool = field(default=True)
     mm_vision_select_feature: Optional[str] = field(default="patch")
+    mm_use_spatial_pooling: bool = field(default=False)
+    mm_use_vlm_template: bool = field(default=False)
     flash_attn_2_enabled: bool = False
     task: Optional[str] = field(default="agent")
 
@@ -123,9 +124,10 @@ class DataArguments:
     image_folder: Optional[str] = field(default=None)
     image_aspect_ratio: str = 'square'
     max_num_crops: int = 25
+    max_num_frames: int = 8
     add_im_loss: bool = False
     conversation_style: str = 'coin'
-    training_size: str = 'default'
+    training_size: int = -1
     show_trace: bool = False
 
 
@@ -166,8 +168,6 @@ class TrainingArguments(transformers.TrainingArguments):
     vision_tokenizer_lr: Optional[float] = None
     group_by_modality_length: bool = field(default=False)
     local_run: bool = False
-    max_grad_norm: float = 1.0
-    
 
 def maybe_zero_3(param, ignore_status=False, name=None):
     from deepspeed import zero
@@ -245,7 +245,7 @@ def safe_save_model_for_hf_trainer(trainer: transformers.Trainer,
 
     if getattr(trainer.args, "tune_mm_mlp_adapter", False):
         # Only save Adapter
-        keys_to_match = ['mm_projector']
+        keys_to_match = ['mm_projector', 'segtok_']
         if getattr(trainer.args, "use_im_start_end", False):
             keys_to_match.extend(['embed_tokens', 'embed_in'])
 
@@ -421,8 +421,8 @@ def train():
     local_rank = training_args.local_rank
     compute_dtype = (torch.float16 if training_args.fp16 else (torch.bfloat16 if training_args.bf16 else torch.float32))
 
-    if training_args.min_lr_rate is not None:
-        training_args.lr_scheduler_kwargs = {'min_lr_rate': training_args.min_lr_rate}
+    #if training_args.min_lr_rate is not None:
+    #    training_args.lr_scheduler_kwargs = {'min_lr_rate': training_args.min_lr_rate}
 
     bnb_model_from_pretrained_args = {}
     if training_args.bits in [4, 8]:
@@ -443,95 +443,23 @@ def train():
             )
         ))
 
-    if 'magma' in model_args.model_name_or_path:
-        model = MagmaForForCausalLM.from_pretrained(
-            model_args.model_name_or_path,
-            cache_dir=training_args.cache_dir,
-            attn_implementation="flash_attention_2" if model_args.flash_attn_2_enabled else None,
-            torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
-            **bnb_model_from_pretrained_args
-        )
-        magma_processor = MagmaProcessor.from_pretrained(
-            model_args.model_name_or_path,
-            trust_remote_code=True
-        )        
-        model.config.tokenizer_vocab_size = magma_processor.tokenizer.vocab_size
-    else:
-        vision_config = {
-            "img_size": model_args.img_size,
-            "anyres_strategy": model_args.img_anyres_strategy,
-            "vision_backbone": model_args.vision_backbone,
-            "feature_outs": model_args.feature_outs,
-            "vision_tower": model_args.vision_tower,
-            "vision_tower_ckpt": model_args.vision_tower_ckpt,
-            "mm_vision_select_layer": model_args.mm_vision_select_layer,
-            "mm_vision_select_feature": model_args.mm_vision_select_feature,
-            "pretrain_mm_mlp_adapter": model_args.pretrain_mm_mlp_adapter,
-            "mm_projector_type": model_args.mm_projector_type,
-            "proj_vis_to_txt_tokens": model_args.proj_vis_to_txt_tokens,
-            "mm_use_im_patch_token": model_args.mm_use_im_patch_token,
-            "vision_feature_layer": "clip_vis_dense",
-            "use_cache": False,
-        }        
-        text_config = AutoConfig.from_pretrained(
-            model_args.model_name_or_path, 
-            trust_remote_code=True
-        )
-        magma_config = MagmaConfig(
-            vision_config=vision_config,
-            text_config=text_config,
-        )
-        model = MagmaForForCausalLM(magma_config)
-        # reload language model
-        model.language_model = AutoModelForCausalLM.from_pretrained(
-            model_args.model_name_or_path,
-            cache_dir=training_args.cache_dir,
-            attn_implementation="flash_attention_2" if model_args.flash_attn_2_enabled else None,      
-            torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
-            trust_remote_code=True,
-            **bnb_model_from_pretrained_args
-        )     
-        # reload vision encoder
-        from open_clip.pretrained import download_pretrained_from_hf      
-        if vision_config['vision_tower'] == 'convnext':
-            model_id = 'laion/CLIP-convnext_large-laion2B-s34B-b82K-augreg'
-        else:
-            model_id = 'laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg'  
-        checkpoint_path = download_pretrained_from_hf(model_id, cache_dir=None)
-        model.load_special_module_from_ckpt(checkpoint_path, torch_dtype=(torch.bfloat16 if training_args.bf16 else None))
+    model = MagmaForForCausalLM.from_pretrained(
+        model_args.model_name_or_path,
+        cache_dir=training_args.cache_dir,
+        attn_implementation="flash_attention_2" if model_args.flash_attn_2_enabled else None,
+        torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
+        **bnb_model_from_pretrained_args
+    )
 
-        # load 'magma/default_preprocessor_config.json' if it exists
-        if os.path.exists('magma/default_preprocessor_config.json'):
-            with open('magma/default_preprocessor_config.json') as f:
-                preprocessor_config = json.load(f)
-        else:
-            preprocessor_config = {}
-        image_processor = MagmaImageProcessor(**preprocessor_config)
-        tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path)
-        magma_processor = MagmaProcessor(image_processor=image_processor, tokenizer=tokenizer)
-
-        smart_tokenizer_and_embedding_resize(
-            special_tokens_dict=["<image>"],
-            tokenizer=magma_processor.tokenizer,
-            model=model,
-        )      
-
-        # if tokenizer does not have pad_token, add it
-        if magma_processor.tokenizer.pad_token_id is None:
-            smart_tokenizer_and_embedding_resize(
-                special_tokens_dict={'pad_token': '<pad>'},
-                tokenizer=magma_processor.tokenizer,
-                model=model,
-            )
-
-        model.config.image_token_index = tokenizer.convert_tokens_to_ids("<image>")
-        model.config.tokenizer_vocab_size = magma_processor.tokenizer.vocab_size
-        
     model = model.to(training_args.device)
-    
+
+    magma_processor = MagmaProcessor.from_pretrained(
+        model_args.model_name_or_path,
+        trust_remote_code=True
+    )
     magma_processor.tokenizer.model_max_length = training_args.model_max_length
     magma_processor.image_processor.base_img_size = model_args.img_size
-    magma_processor.image_processor.anyres_strategy = model_args.img_anyres_strategy
+    magma_processor.image_processor.num_crops = data_args.max_num_crops
 
     if model_args.mm_use_trace_start_end:
         smart_tokenizer_and_embedding_resize(
@@ -626,27 +554,26 @@ def train():
     data_args.mm_use_trace_start_end = model_args.mm_use_trace_start_end
     data_args.mm_use_trace_speed = model_args.mm_use_trace_speed
     data_args.mm_use_image_start_end = model_args.mm_use_image_start_end
-    data_args.mm_use_image_history = model_args.mm_use_image_history
-    data_args.mm_use_som_tom = model_args.mm_use_som_tom
-    data_args.mm_use_som_tom_orig_img = model_args.mm_use_som_tom_orig_img
     data_args.remove_static_trace_pts = model_args.remove_static_trace_pts
     data_args.spatial_quant_size = model_args.spatial_quant_size
     data_args.version = model_args.version
     data_args.local_run = training_args.local_run
     data_args.task = model_args.task
-    
+    data_args.mm_use_vlm_template = model_args.mm_use_vlm_template
+
     model.config.mm_use_trace_start_end = model_args.mm_use_trace_start_end
     model.config.mm_use_trace_speed = model_args.mm_use_trace_speed
     model.config.mm_use_image_start_end = model_args.mm_use_image_start_end
-    model.config.mm_use_image_history = model_args.mm_use_image_history
     model.config.remove_static_trace_pts = model_args.remove_static_trace_pts
-    model.config.mm_use_som_tom = model_args.mm_use_som_tom
-    model.config.mm_use_som_tom_orig_img = model_args.mm_use_som_tom_orig_img
     model.config.spatial_quant_size = model_args.spatial_quant_size
     model.config.img_size = model_args.img_size
-    model.config.use_cache = False    
+    model.config.mm_use_spatial_pooling = model_args.mm_use_spatial_pooling
+    model.config.use_cache = False
     
     model.config.vision_config['img_anyres_strategy'] = model_args.img_anyres_strategy
+
+    if model_args.mm_use_spatial_pooling:
+        model.init_spatial_pooling()
 
     data_module = make_supervised_data_module(processor=magma_processor,
                                               data_args=data_args,
@@ -657,12 +584,7 @@ def train():
                     args=training_args,
                     **data_module)
     
-    # print training_args
-    rank0_print(training_args)
-    rank0_print(model_args)
-    
     if list(pathlib.Path(training_args.output_dir).glob("checkpoint-*")):
-        print("Resuming from checkpoint...")
         trainer.train(resume_from_checkpoint=True)
     else:
         trainer.train()
@@ -683,9 +605,6 @@ def train():
     else:
         safe_save_model_for_hf_trainer(trainer=trainer,
                                        output_dir=training_args.output_dir)
-        # save image_processor config for rank 0
-        if training_args.local_rank == 0 or training_args.local_rank == -1:        
-            magma_processor.image_processor.save_pretrained(training_args.output_dir)
 
 
 if __name__ == "__main__":
