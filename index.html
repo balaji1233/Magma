@@ -201,8 +201,73 @@
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-full-width">
-          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Set-of-Mark & Trace-of-Mark Generation</h2>
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;margin-top: -40px;">Magma Pretraining</h2>
+          <div class="columns is-centered">
+            <div class="column is-four-fifths">
+              <div class="columns is-centered">
+                <div style="width: 100%; display: inline-block;">
+                  <img src="./static/images/magma_pretrain.png">
+                </div>
+              </div>
+              <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Magma pretraining pipeline. </strong>For all training data, texts are tokenized into tokens, while images and videos from different domains
+                are encoded by a shared vision encoder. The resulted discrete and continuous tokens are then fed into a LLM to generate the outputs in
+                verbal, spatial and action types.
+              </p>
+              <div class="columns is-centered">
+                <div style="width: 27%; display: inline-block; margin-top: 20px; margin-right: 2%;">
+                  <img src="./static/images/magma_data_sunburst.png">
+                </div>
+                <div style="width: 70%; display: inline-block; margin-top: 20px;">
+                  <img src="./static/images/magma_data_sample.png">
+                </div>
+              </div>
+              <p style="text-align: left;font-size: 18px; margin-top: 20px;">
+                <strong>Overview of Pretraining Data Sources</strong>: 
+                <span style="color: rgb(255, 210, 63);">instructional videos</span>, 
+                <span style="color: rgb(26, 163, 26);">robotics manipulation</span>, 
+                <span style="color: rgb(213, 113, 130);">UI navigation</span>, and 
+                <span style="color: rgb(55, 160, 246);">multimodal understanding</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px; margin-top: -40px;">Set-of-Mark & Trace-of-Mark Generation</h2>
           <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
+          <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths ">
+            <div class="content has-text-justified">
+              <div style="width: 100%; display: inline-block;">
+                <img src="./static/images/som_tom.png">
+              </div>
+            </div>
+            <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Set-of-Mark for Action Grounding. </strong>Set-of-Mark supervisions for action grounding on UI screenshot (left), robot manipulation (middle) and human video (right).</p>
+            <div class="content has-text-justified">
+              <div style="width: 100%; display: inline-block;">
+                <img src="./static/images/tom_fig.png">
+              </div>
+            </div>
+            <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Trace-of-Mark for Action Planning. </strong>Trace-of-Mark supervisions for robot manipulation (left) and human action (right). </p>  
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--section class="section body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Set-of-Mark & Trace-of-Mark Generation</h2>
+          <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2>
           <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths ">
           <div class="content has-text-justified">
@@ -242,14 +307,14 @@
         </div>
       </div>
     </div>
-  </section>
+  </section-->
 
-  <section class="section body">
+  <!--section class="section body">
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-full-width">
           <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Magma Pretraining</h2>
-          <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
+          <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2>
           <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths ">
           <div class="content has-text-justified">
@@ -298,7 +363,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section-->
 
 
 
@@ -336,9 +401,12 @@
   </section>
 
   <section class="section body">
-    <div class="container is-max-fullhd" style="margin-top: -5em;">
-      <!-- <hr width="100%" size="2"> -->
-      <h2 class="title is-3 has-text-centered">UI Navigation</h2>
+    <!--div class="container is-max-fullhd" style="margin-top: -5em;"-->
+    <!-- <hr width="100%" size="2"> -->
+    <div class="container">
+    <div class="columns is-centered">
+    <div class="column is-full-width">
+      <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;margin-top: -40px;">UI Navigation</h2>
       <div class="columns is-centered">
         <div class="column is-four-fifths">
           <div class="content has-text-justified">
@@ -365,6 +433,8 @@
         </div>
       </div>
     </div>
+    </div>
+    </div>
     <script>
       document.querySelectorAll('video').forEach(video => {
           video.playbackRate = 2.5;
@@ -373,9 +443,12 @@
   </section>
   
   <section class="section" id="real">
-    <div class="container is-max-fullhd" style="margin-top: -5em;">
-      <!-- <hr width="100%" size="2"> -->
-      <h2 class="title is-3 has-text-centered">Embodied Intelligence</h2>
+    <!--div class="container is-max-fullhd" style="margin-top: -5em;"-->
+    <!-- <hr width="100%" size="2"> -->
+    <div class="container">
+    <div class="columns is-centered">
+    <div class="column is-full-width">
+      <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;margin-top: -40px;">Embodied Intelligence</h2>
       <div class="columns is-centered">
         <div class="column is-four-fifths">
           <div class="content has-text-justified">
@@ -519,6 +592,8 @@
       </div>
 
     </div>
+    </div>
+    </div>
     <script>
       document.querySelectorAll('video').forEach(video => {
           video.playbackRate = 2.5;
@@ -640,9 +715,12 @@
   </section>
 
   <section class="section" id="real">
-    <div class="container is-max-fullhd" style="margin-top: -5em;">
-      <hr width="100%" size="2">
-      <h2 class="title is-3 has-text-centered">Video conversation examples</h2>
+    <!--div class="container is-max-fullhd" style="margin-top: -5em;"-->
+    <div class="container">
+    <div class="columns is-centered">
+    <div class="column is-full-width">
+      <!-- <hr width="100%" size="2"> -->
+      <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;margin-top: -40px;">Video conversation examples</h2>
       <div class="columns is-centered">
         <div class="column is-four-fifths">
           <div class="content has-text-justified">
@@ -691,6 +769,8 @@
           </div>
         </div>
       </div>
+    </div>
+    </div>
     </div>
 
     <!--div class="container is-max-fullhd" style="margin-top: -5em;">
