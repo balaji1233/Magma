@@ -204,81 +204,11 @@
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-full-width">
-          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Set-of-Mark & Trace-of-Mark Generation</h2>
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Magma Pretraining Pipeline</h2>
           <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
           <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths ">
           <div class="content has-text-justified">
-
-            <tr>
-              <td>
-                <div class="row" style="text-align: center;">
-                  <div class="col">
-                    <img src="./static/images/som_fig.png" alt="Image description" width="60%"; >
-                  </div>
-                </div>
-                <div class="columns is-centered">
-                  <div class="column">
-                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Set-of-Mark for Action Grounding. </strong>Set-of-Mark supervisions for action grounding on UI screenshot (left), robot manipulation (middle) and human video (right).</p>
-                </div>
-              </div>
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <div class="row" style="text-align: center;">
-                  <div class="col style="text-align: center;">
-                    <img src="./static/images/tom_fig.png" alt="Image description" width="100%"; >
-                  </div>
-                </div>
-                <div class="columns is-centered">
-                  <div class="column">
-                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Trace-of-Mark for Action Planning. </strong>Trace-of-Mark supervisions for robot manipulation (left) and human action (right). </p>
-                </div>
-              </div>
-              </td>
-            </tr>
-          </div>
-          </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section body">
-    <div class="container">
-      <div class="columns is-centered">
-        <div class="column is-full-width">
-          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;">Magma Pretraining</h2>
-          <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
-          <div class="columns is-centered has-text-centered">
-          <div class="column is-four-fifths ">
-          <div class="content has-text-justified">
-            
-            <tr>
-              <td>
-                <div class="row">
-                  <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-                    <img src="./static/images/magma_data_sunburst.png" style="max-width: 250px;">
-                    <img src="./static/images/magma_data_sample.png" style="max-width: 650px;">
-                </div>
-                </div>
-                <div class="columns is-centered">
-                  <div class="column">
-                    <p style="text-align: left;font-size: 18px; margin-top: 20px;">
-                      <strong>Overview of Pretraining Data Sources</strong>: 
-                      <span style="color: rgb(255, 210, 63);">instructional videos</span>, 
-                      <span style="color: rgb(26, 163, 26);">robotics manipulation</span>, 
-                      <span style="color: rgb(213, 113, 130);">UI navigation</span>, and 
-                      <span style="color: rgb(55, 160, 246);">multimodal understanding</span>
-                  </p>
-                </div>
-              </div>
-              </td>
-            </tr>
-
             <tr>
               <td>
                 <div class="row">
@@ -295,6 +225,7 @@
               </div>
               </td>
             </tr>
+            
           </div>
           </div>
           </div>
@@ -303,6 +234,75 @@
     </div>
   </section>
 
+  <section class="section body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;margin-top: -40px;">Magma Technical Details</h2>
+          <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
+          <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths ">
+          <div class="content has-text-justified">
+
+            <tr>
+              <td>
+                <div class="row" style="text-align: center;">
+                  <div class="col">
+                    <img src="./static/images/som_fig.jpg" alt="Image description" width="100%"; >
+                  </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Set-of-Mark (SoM) for Action Grounding. </strong>Set-of-Mark prompting enables effective action grounding in images for both UI screenshot (left), robot manipulation (middle) and human video (right) by having the model predict numeric marks for clickable buttons or robot arms in image space.</p>
+                </div>
+              </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="row" style="text-align: center;">
+                  <div class="col style="text-align: center;">
+                    <img src="./static/images/tom_fig.png" alt="Image description" width="100%"; >
+                  </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Trace-of-Mark (ToM) for Action Planning. </strong>Trace-of-Mark supervisions for robot manipulation (left) and human action (right). It compels the model to comprehend temporal video dynamics and anticipate future states before acting, while using fewer tokens than next-frame prediction to capture longer temporal horizons and action-related dynamics without ambient distractions.</p>
+                </div>
+              </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="row">
+                  <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                    <img src="./static/images/magma_data_sunburst.png" style="max-width: 300px;margin-right: 20px; ">
+                    <img src="./static/images/magma_data_sample.png" style="max-width: 730px;">
+                </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                    <p style="text-align: left;font-size: 18px; margin-top: 20px;">
+                      <strong>Overview of Pretraining Data Sources</strong>: 
+                      <span style="color: rgb(255, 210, 63);">instructional videos</span>, 
+                      <span style="color: rgb(26, 163, 26);">robotics manipulation</span>, 
+                      <span style="color: rgb(213, 113, 130);">UI navigation</span>, and 
+                      <span style="color: rgb(55, 160, 246);">multimodal understanding.</span>
+                      We apply SoM and ToM for different data types, with SoM enabling unified action grounding across all modalities while ToM is specifically applied to video and robotics data.
+                  </p>
+                </div>
+              </div>
+              </td>
+            </tr>
+          </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
 
   <section class="section body">
@@ -339,7 +339,7 @@
   </section>
 
   <section class="section body">
-    <div class="container is-max-fullhd" style="margin-top: -5em;">
+    <div class="container is-max-fullhd" style="margin-top: -40px;">
       <!-- <hr width="100%" size="2"> -->
       <h2 class="title is-3 has-text-centered">UI Navigation</h2>
       <div class="columns is-centered">
@@ -514,9 +514,20 @@
 
       <div class="columns is-centered">
         <div class="column is-four-fifths">
-          <p style="text-align: left;font-size: 18px"><strong>Magma</strong> consistently outperforms OpenVLA across soft object manipulation and pick-and-place operations, demonstrating reliable performance in both in-distribution and out-of-distribution generalization tasks.</p>
-          <div style="text-align: center; margin: 2rem 0;">
-            <img src="./static/images/magma_real.png" alt="Image description" style="width: 60%;">
+          <p style="text-align: left;font-size: 18px"><strong>Few-shot finetuning on WidowX robot. </strong><strong>Magma</strong> consistently outperforms OpenVLA (finetuning) across soft object manipulation and pick-and-place operations, demonstrating reliable performance in both in-distribution and out-of-distribution generalization tasks on real robots.</p>
+          <div class="columns is-centered">
+            <div style="width: 50%; display: inline-block; margin-top: 20px; margin-right: 10px; vertical-align: top;">
+              <div style="display: flex; flex-direction: column;">
+                <img src="./static/images/magma_real.png" style="flex: 1; object-fit: contain;">
+                <p style="text-align: center; margin-top: 20px; font-weight: bold;">Magma on Real Robot</p>
+              </div>
+            </div>
+            <div style="width: 50%; display: inline-block; margin-top: 20px; margin-left: 10px; vertical-align: top;">
+              <div style="display: flex; flex-direction: column;">
+                <img src="./static/images/magma_libero.png" style="flex: 1; object-fit: contain;">
+                <p style="text-align: center; margin-top: 5px; font-weight: bold;">Magma on LIBERO</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -538,9 +549,15 @@
           <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths ">
           <div class="content has-text-justified">
-            
+          
             <tr>
               <td>
+                <div class="columns is-centered ">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 10px;"><strong>Few-shot finetuning on LIBERO. </strong> <strong>Magma</strong> achieves a significantly higher average success rate
+                        in all task suites. Additionally, removing SoM and ToM during pretraining has a negative impact on model performance</p>
+                  </div>
+                </div>
                 <div class="row">
                   <div class="col">
                     <img src="./static/images/magma_simpler.png" alt="Image description" width="100%">
@@ -548,7 +565,7 @@
                 </div>
                 <div class="columns is-centered ">
                   <div class="column">
-                      <p style="text-align: left;font-size: 18px; margin-top: 10px;"><strong>SimplerEnv evaluation on Google Robots and Bridge. </strong> <strong>Magma</strong> shows strong cross-domain robustness and demonstrates impressive results in cross-embodiment manipulation simulation tasks.</p>
+                      <p style="text-align: left;font-size: 18px; margin-top: 10px;"><strong>Zero-shot SimplerEnv evaluation on Google Robots and Bridge. </strong> <strong>Magma</strong> shows strong cross-domain robustness and demonstrates impressive results in cross-embodiment manipulation simulation tasks.</p>
                 </div>
               </div>
               </td>
