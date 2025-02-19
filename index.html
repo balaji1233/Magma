@@ -64,7 +64,10 @@
         <div class="container">
           <div class="columns is-centered">
             <div class="column has-text-centered">
-              <h1 class="title is-1 publication-title">Magma: A Foundation Model for Multimodal AI Agents</h1>
+              <div style="display: flex; align-items: center;">
+                <img src="./static/images/logo.png" alt="Magma Logo" style="margin-right: 10px; height: 80px;margin-top: -10px;">
+                <h1 class="title is-1 publication-title">Magma: A Foundation Model for Multimodal AI Agents</h1>
+              </div>
               <div class="is-size-5 publication-authors">
                 <span class="author-block">
                   <a target="_blank" href="https://jwyang.github.io/">Jianwei Yang</a><sup>*</sup><sup>1</sup><sup>†</sup>&nbsp;&nbsp;&nbsp;
@@ -357,6 +360,7 @@
               </div>
               </td>
             </tr>
+            
           </div>
           </div>
           </div>
@@ -365,6 +369,75 @@
     </div>
   </section-->
 
+  <section class="section body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3" style="text-align: center; padding-bottom: 10px;margin-top: -40px;">Magma Technical Details</h2>
+          <!-- <h2 class="subtitle is-4" style="text-align: center;">Defining Visual Affordances</h2> -->
+          <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths ">
+          <div class="content has-text-justified">
+
+            <tr>
+              <td>
+                <div class="row" style="text-align: center;">
+                  <div class="col">
+                    <img src="./static/images/som_fig.jpg" alt="Image description" width="100%"; >
+                  </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Set-of-Mark (SoM) for Action Grounding. </strong>Set-of-Mark prompting enables effective action grounding in images for both UI screenshot (left), robot manipulation (middle) and human video (right) by having the model predict numeric marks for clickable buttons or robot arms in image space.</p>
+                </div>
+              </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="row" style="text-align: center;">
+                  <div class="col style="text-align: center;">
+                    <img src="./static/images/tom_fig.png" alt="Image description" width="100%"; >
+                  </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Trace-of-Mark (ToM) for Action Planning. </strong>Trace-of-Mark supervisions for robot manipulation (left) and human action (right). It compels the model to comprehend temporal video dynamics and anticipate future states before acting, while using fewer tokens than next-frame prediction to capture longer temporal horizons and action-related dynamics without ambient distractions.</p>
+                </div>
+              </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="row">
+                  <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                    <img src="./static/images/magma_data_sunburst.png" style="max-width: 300px;margin-right: 20px; ">
+                    <img src="./static/images/magma_data_sample.png" style="max-width: 730px;">
+                </div>
+                </div>
+                <div class="columns is-centered">
+                  <div class="column">
+                    <p style="text-align: left;font-size: 18px; margin-top: 20px;">
+                      <strong>Overview of Pretraining Data Sources</strong>: 
+                      <span style="color: rgb(255, 210, 63);">instructional videos</span>, 
+                      <span style="color: rgb(26, 163, 26);">robotics manipulation</span>, 
+                      <span style="color: rgb(213, 113, 130);">UI navigation</span>, and 
+                      <span style="color: rgb(55, 160, 246);">multimodal understanding.</span>
+                      We apply SoM and ToM for different data types, with SoM enabling unified action grounding across all modalities while ToM is specifically applied to video and robotics data.
+                  </p>
+                </div>
+              </div>
+              </td>
+            </tr>
+          </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
 
   <section class="section body">
@@ -584,9 +657,20 @@
 
       <div class="columns is-centered">
         <div class="column is-four-fifths">
-          <p style="text-align: left;font-size: 18px"><strong>Magma</strong> consistently outperforms OpenVLA across soft object manipulation and pick-and-place operations, demonstrating reliable performance in both in-distribution and out-of-distribution generalization tasks.</p>
-          <div style="text-align: center; margin: 2rem 0;">
-            <img src="./static/images/magma_real.png" alt="Image description" style="width: 60%;">
+          <p style="text-align: left;font-size: 18px"><strong>Few-shot finetuning on WidowX robot. </strong><strong>Magma</strong> consistently outperforms OpenVLA (finetuning) across soft object manipulation and pick-and-place operations, demonstrating reliable performance in both in-distribution and out-of-distribution generalization tasks on real robots.</p>
+          <div class="columns is-centered">
+            <div style="width: 50%; display: inline-block; margin-top: 20px; margin-right: 10px; vertical-align: top;">
+              <div style="display: flex; flex-direction: column;">
+                <img src="./static/images/magma_real.png" style="flex: 1; object-fit: contain;">
+                <p style="text-align: center; margin-top: 20px; font-weight: bold;">Magma on Real Robot</p>
+              </div>
+            </div>
+            <div style="width: 50%; display: inline-block; margin-top: 20px; margin-left: 10px; vertical-align: top;">
+              <div style="display: flex; flex-direction: column;">
+                <img src="./static/images/magma_libero.png" style="flex: 1; object-fit: contain;">
+                <p style="text-align: center; margin-top: 5px; font-weight: bold;">Magma on LIBERO</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -610,9 +694,15 @@
           <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths ">
           <div class="content has-text-justified">
-            
+          
             <tr>
               <td>
+                <div class="columns is-centered ">
+                  <div class="column">
+                      <p style="text-align: left;font-size: 18px; margin-top: 10px;"><strong>Few-shot finetuning on LIBERO. </strong> <strong>Magma</strong> achieves a significantly higher average success rate
+                        in all task suites. Additionally, removing SoM and ToM during pretraining has a negative impact on model performance.</p>
+                  </div>
+                </div>
                 <div class="row">
                   <div class="col">
                     <img src="./static/images/magma_simpler.png" alt="Image description" width="100%">
@@ -620,7 +710,7 @@
                 </div>
                 <div class="columns is-centered ">
                   <div class="column">
-                      <p style="text-align: left;font-size: 18px; margin-top: 10px;"><strong>SimplerEnv evaluation on Google Robots and Bridge. </strong> <strong>Magma</strong> shows strong cross-domain robustness and demonstrates impressive results in cross-embodiment manipulation simulation tasks.</p>
+                      <p style="text-align: left;font-size: 18px; margin-top: 10px;"><strong>Zero-shot SimplerEnv evaluation on Google Robots and Bridge. </strong> <strong>Magma</strong> shows strong zero-shot cross-domain robustness and demonstrates impressive results in cross-embodiment manipulation simulation tasks.</p>
                 </div>
               </div>
               </td>
@@ -671,7 +761,7 @@
                   <img src="./static/images/magma_spatial_visualizations.png">
                 </div>
               </div>
-              <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Spatial reasoning evaluations.</strong> Spatial reasoning questions are challenging even for GPT-4o but Magma can answer relatively well despite relying on much fewer pretraining data</p>
+              <p style="text-align: left;font-size: 18px; margin-top: 20px;"><strong>Spatial reasoning evaluations.</strong> Spatial reasoning questions are challenging even for GPT-4o but Magma can answer relatively well despite relying on much fewer pretraining data.</p>
             </div>
           </div>
         </div>
@@ -732,7 +822,7 @@
         <div class="column is-four-fifths">
           <div class="columns is-centered">
             <div class="column content has-text-centered">
-              <video autoplay muted loop controls playsinline height="80%" style="max-width: 450px; width: 100%; border-radius: 10px; overflow: hidden;">
+              <video autoplay muted loop controls playsinline height="80%" style="max-width: 450px; max-height: 260px; width: 100%; border-radius: 10px; overflow: hidden;">
                 <source src="./static/videos/magma_chess.mp4" type="video/mp4">
               </video>
               <p class="is-5 has-text-left"><strong><u>User</u></strong>: I really want to win this game. Can you suggest the next move that I should make to maximize my chances of winning?</p>
@@ -740,10 +830,10 @@
             </div>
             <div class="column content has-text-centered">
               <video autoplay muted loop controls playsinline height="80%" style="max-width: 450px; width: 100%; border-radius: 10px; overflow: hidden;">
-                <source src="./static/videos/magma_potted_plant.mp4" type="video/mp4">
+                <source src="./static/videos/magma_relaxation.mp4" type="video/mp4">
               </video>
-              <p class="is-5 has-text-left"><strong><u>User</u></strong>: Please describe in detail what is happening in the video by focusing on the main actions.</p>
-              <p class="is-5 has-text-left"><strong><u>Magma</u></strong>: The video begins with a close-up of a hand reaching for a red potted plant placed on a wooden shelf. The plant has green and yellow-striped leaves and is accompanied by a book titled 'YOUNG' and a wooden bowl stacked on top of each other. The hand carefully adjusts the position of the plant on the shelf, ensuring it is properly placed. The background includes a beige watering can hanging on a stand and a radiator with white pipes. The hand then adjusts the plant once more, making sure it is centered on the shelf. The scene develops as the hand, now wearing a yellow sweater and a ring on the left hand, reaches out to adjust the plant's position once more. The hand then moves away from the plant, and the camera shifts to show more of the surrounding area, including a red high chair and a wooden countertop with various items, such as a smartphone and a small red cup. The video wraps up with a wider view of the room, revealing a checkered floor and several other plants in the background, adding a homely touch to the setting.</p>
+              <p class="is-5 has-text-left"><strong><u>User</u></strong>: I want to relax for a few hours in here. Can you suggest some things for me to do?</p>
+              <p class="is-5 has-text-left"><strong><u>Magma</u></strong>: Watch TV, read a book, and enjoy the view of the autumn forest.</p>
             </div>
           </div>
         </div>
@@ -759,12 +849,13 @@
               <p class="is-5 has-text-left"><strong><u>User</u></strong>: Please provide a detailed description of the video, focusing on the main subject and the actions taking place as well as predict what is going to happen next.</p>
               <p class="is-5 has-text-left"><strong><u>Magma</u></strong>: The video takes place in a convenience store, focusing on the checkout counter. It begins with a view of the counter displaying a sign that reads 'PICK 5 FOR $8.00' along with images of various snacks. The counter is filled with various items, including snacks and a payment terminal. An employee, wearing a black shirt with white sleeves, is seen handling the payment terminal. A customer, identifiable by their white sleeve and colorful bracelet, places a red shopping basket filled with snacks and a drink on the counter. The employee continues to operate the payment terminal while the customer adjusts the items in the basket. The interaction between the customer and the employee is highlighted, with the employee assisting the customer with the items.                 The scene continues at the same checkout counter, with the 'PICK 5 FOR $8.00' sign still prominently displayed. The customer's red shopping basket, now filled with snacks including a drink cup labeled 'Fruit Swoosh' and a blue package of cookies, is placed on the counter. The employee is seen handling the payment terminal. The customer's hand, adorned with a colorful bracelet, interacts with the items in the basket. The employee continues to assist the customer, adjusting the items on the counter. The interaction between the customer and the employee remains the focal point, with the employee assisting the customer with the items. The person behind the counter is likely to process the payment and possibly hand over the items.</p>
             </div>
+
             <div class="column content has-text-centered">
-              <video autoplay muted loop controls playsinline height="80%" style="max-width: 450px; width: 100%; border-radius: 10px; overflow: hidden;">
-                <source src="./static/videos/magma_relaxation.mp4" type="video/mp4">
+              <video autoplay muted loop controls playsinline width="100%" height="80%" style="max-width: 450px; max-height: 260px; border-radius: 10px; overflow: hidden;">
+                <source src="./static/videos/magma_potted_plant.mp4" type="video/mp4">
               </video>
-              <p class="is-5 has-text-left"><strong><u>User</u></strong>: I want to relax for a few hours in here. Can you suggest some things for me to do?</p>
-              <p class="is-5 has-text-left"><strong><u>Magma</u></strong>: Watch TV, read a book, and enjoy the view of the autumn forest.</p>
+              <p class="is-5 has-text-left"><strong><u>User</u></strong>: Please describe in detail what is happening in the video by focusing on the main actions.</p>
+              <p class="is-5 has-text-left"><strong><u>Magma</u></strong>: The video begins with a close-up of a hand reaching for a red potted plant placed on a wooden shelf. The plant has green and yellow-striped leaves and is accompanied by a book titled 'YOUNG' and a wooden bowl stacked on top of each other. The hand carefully adjusts the position of the plant on the shelf, ensuring it is properly placed. The background includes a beige watering can hanging on a stand and a radiator with white pipes. The hand then adjusts the plant once more, making sure it is centered on the shelf. The scene develops as the hand, now wearing a yellow sweater and a ring on the left hand, reaches out to adjust the plant's position once more. The hand then moves away from the plant, and the camera shifts to show more of the surrounding area, including a red high chair and a wooden countertop with various items, such as a smartphone and a small red cup. The video wraps up with a wider view of the room, revealing a checkered floor and several other plants in the background, adding a homely touch to the setting.</p>
             </div>
           </div>
         </div>
@@ -772,6 +863,7 @@
     </div>
     </div>
     </div>
+
 
     <!--div class="container is-max-fullhd" style="margin-top: -5em;">
       <hr width="100%" size="2">
@@ -860,6 +952,81 @@
           video.playbackRate = 1.0;
       });
   </script>
+</section>
+
+<section class="section" style="margin-top: -40px; margin-bottom: 0; padding-top: 0; padding-bottom: 0;" id="real">
+  <div class="container is-max-fullhd" >
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        </div>
+      </div>
+    </div>
+
+  <div class="columns is-centered">
+    <div class="column is-four-fifths">
+      <div class="columns is-centered">
+        <div class="column content has-text-centered">
+          <video autoplay muted loop controls playsinline width="100%" height="80%" style="max-width: 100%; max-height: 400px; border-radius: 10px; overflow: hidden; object-fit: cover;">
+            <source src="./static/videos/rayban-video-1.mp4" type="video/mp4">
+          </video>
+          <p class="is-5 has-text-left"><strong><u>User</u></strong>: Please describe in detail what is happening in the video by focusing on the main actions.</p>
+          <p class="is-5 has-text-left"><strong><u>Magma</u></strong>: The video begins with a close-up view of a kitchen sink area. The sink has a shiny silver faucet with water running, and a person is holding a black mug under the running water. On the left side of the sink, there is a bottle of dish soap and a blue toothbrush. The person then picks up a blue sponge and starts scrubbing the inside of the mug. The scene continues with the person methodically scrubbing the mug, ensuring it is clean. The video wraps up with the person placing the scrubbed mug in the sink and the blue sponge beside it, indicating that the cleaning process is complete.</p>
+        </div>
+        <div class="column content has-text-centered">
+          <video autoplay muted loop controls playsinline width="100%" height="80%" style="max-width: 100%; max-height: 400px; border-radius: 10px; overflow: hidden; object-fit: cover;">
+            <source src="./static/videos/rayban-video-2.MOV" type="video/mp4">
+          </video>
+          <p class="is-5 has-text-left"><strong><u>User</u></strong>: What drink did the person choose in the video?</p>
+          <p class="is-5 has-text-left"><strong><u>Magma</u></strong>: The person chose a soy beverage labeled as 'SAVE SOY'.</p> 
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+  <script>
+    document.querySelectorAll('video').forEach(video => {
+        video.playbackRate = 1.0;
+    });
+</script>
+</section>
+
+<section class="section" id="real">
+  <div class="container is-max-fullhd" style="margin-top: -5em;">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        </div>
+      </div>
+    </div>
+
+<div class="columns is-centered">
+  <div class="column is-four-fifths">
+    <div class="columns is-centered">
+      <div class="column content has-text-centered">
+        <video autoplay muted loop controls playsinline width="100%" height="80%" style="max-width: 100%; max-height: 400px; border-radius: 10px; overflow: hidden; object-fit: cover;">
+          <source src="./static/videos/rayban-video-3.MOV" type="video/mp4">
+        </video>
+        <p class="is-5 has-text-left"><strong><u>User</u></strong>: Can you predict the next actions that the person is going to carry out beyond the video?</p>
+        <p class="is-5 has-text-left"><strong><u>Magma</u></strong>: The person is likely about to pour hot water into the cup and proceed with the tea preparation process.</p>
+      </div>
+      <div class="column content has-text-centered">
+        <video autoplay muted loop controls playsinline width="100%" height="80%" style="max-width: 100%; max-height: 400px; border-radius: 10px; overflow: hidden; object-fit: cover;">
+          <source src="./static/videos/rayban-video-5.MOV" type="video/mp4">
+        </video>
+        <p class="is-5 has-text-left"><strong><u>User</u></strong>: Can you describe what the person is doing in the video?</p>
+        <p class="is-5 has-text-left"><strong><u>Magma</u></strong>: The person is interacting with the coffee machine by pressing buttons, likely to make a coffee choice.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+  <script>
+    document.querySelectorAll('video').forEach(video => {
+        video.playbackRate = 1.0;
+    });
+</script>
 </section>
 
   <section class="section" id="BibTeX">
