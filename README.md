@@ -1,5 +1,5 @@
 # Introduction 
-Magma Training Code with native huggingface model support
+This is the training code for finetuning Magma on video SFT data. The dependencies are the same as those of the pretraining stage.
 
 # Getting Started
 
@@ -10,7 +10,7 @@ Download the LLaVa-Video-178K dataset into a folder and specify the path in data
 You can download the pretrained Magma model weights to initialize as the base weights for video supervised fine-tuning. 
 
 ## Run the training sample code
-1. Set the paths for the following arguments:
+1. Set the paths for the following arguments in the script file ./scripts/magma_video_sft.sh:
     - model_name_or_path: path to pretrained model weights (Magma pretraining)
     - output_dir: path to output directory for saving weights
 
