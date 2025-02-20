@@ -10,6 +10,10 @@ Download the LLaVa-Video-178K dataset into a folder and specify the path in data
 You can download the pretrained Magma model weights to initialize as the base weights for video supervised fine-tuning. 
 
 ## Run the training sample code
+1. Set the paths for the following arguments:
+    - model_name_or_path: path to pretrained model weights (Magma pretraining)
+    - output_dir: path to output directory for saving weights
+
 2. Run the sample code using the following command:
 ```bash
 sh ./scripts/magma_video_sft.sh
@@ -32,5 +36,5 @@ cp ./lmms-eval-magma/__init__.py lmms-eval/lmms-eval/models/
 
 Then you can run the evaluation code:
 ```bash
-sh scripts/lmms_eval_magma_1node.sh
+sh scripts/lmms_eval_magma.sh
 ```
