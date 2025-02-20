@@ -1,9 +1,7 @@
 # datasets
-from .coin import coin
 from .epic import epic
 from .youcook2 import youcook2
 from .ego4d import ego4d
-from .howto100m import howto100m
 from .seeclick import seeclick
 from .sthv2 import sthv2
 from .video_sft_data import video_sft_data

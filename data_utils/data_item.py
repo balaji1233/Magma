@@ -18,15 +18,10 @@ class DataItem:
         self.local_run = local_run
 
     def _get_dataset_tag(self, data_path):
-        if "coin" in data_path.lower():
-            return "coin"
-        elif "epic" in data_path.lower():
+        if "epic" in data_path.lower():
             return "epic"
         elif "youcook2" in data_path.lower():
-            return "youcook2"       
-        # TODO: this is a temporary fix
-        elif "baolinpeng/open-x" in data_path:
-            return "openx_orig"     
+            return "youcook2"         
         elif "open-x" in data_path or "openx" in data_path:
             if 'traces' in data_path:
                 return "openx_magma"
@@ -36,8 +31,6 @@ class DataItem:
             return "sthv2"
         elif 'ego4d' in data_path.lower():
             return "ego4d"
-        elif 'howto100m' in data_path.lower():
-            return "howto100m"
         elif 'seeclick' in data_path.lower():
             return "seeclick"
         elif 'llava-video-178k' in data_path.lower():
@@ -143,7 +136,7 @@ class DataItem:
                 if dataset_tag != "openx_orig":
                     if self.training_size > 0:
                         items_temp = items_temp[:self.training_size]             
-                    if dataset_tag in ['sthv2', "ego4d", "howto100m"]: 
+                    if dataset_tag in ['sthv2', "ego4d"]: 
                         for item in items_temp:
                             item['image_folder'] = image_folder
                             item['dataset_tag'] = dataset_tag
